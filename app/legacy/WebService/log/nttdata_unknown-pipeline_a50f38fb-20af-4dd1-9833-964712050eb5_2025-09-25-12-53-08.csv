@@ -1,0 +1,173 @@
+timestamp,message
+2025-09-25T12:51:59.747000,function_runner.py: OK
+2025-09-25T12:51:59.748000,mongodb_connection_context.py: OK
+2025-09-25T12:51:59.749000,utils.py: OK
+2025-09-25T12:51:59.750000,requirements.txt: OK
+2025-09-25T12:52:09.672000,ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+2025-09-25T12:52:09.672000,"awscli 1.42.38 requires botocore==1.40.38, but you have botocore 1.35.99 which is incompatible."
+2025-09-25T12:52:09.672000,"awscli 1.42.38 requires s3transfer<0.15.0,>=0.14.0, but you have s3transfer 0.10.4 which is incompatible."
+2025-09-25T12:52:16.948000,[INFO] ################################## \(-.-)/ ##################################
+2025-09-25T12:52:16.949000,[INFO] Starting job...
+2025-09-25T12:52:16.949000,[INFO] pipeline_execution_id: a50f38fb-20af-4dd1-9833-964712050eb5
+2025-09-25T12:52:16.949000,[INFO] ecr image: api_master_py_3_11
+2025-09-25T12:52:16.949000,[INFO] job size: Small (4 GB)
+2025-09-25T12:52:16.949000,[INFO] job timeout: 36000
+2025-09-25T12:52:16.949000,"[INFO] module_name: vf_claim.views.reporting, function_name: job_fill_reporting"
+2025-09-25T12:52:16.949000,[INFO] function arguments:
+2025-09-25T12:52:16.949000,[INFO] ################################## \(-.-)/ ##################################
+2025-09-25T12:52:20.660000,"/usr/local/lib/python3.11/site-packages/pydantic/_internal/_fields.py:184: UserWarning: Field name ""filter"" shadows an attribute in parent ""DatabaseBaseModel""; "
+2025-09-25T12:52:20.660000,  warnings.warn(
+2025-09-25T12:52:23.176000,/usr/local/lib/python3.11/site-packages/paramiko/pkey.py:100: CryptographyDeprecationWarning: TripleDES has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.TripleDES and will be removed from cryptography.hazmat.primitives.ciphers.algorithms in 48.0.0.
+2025-09-25T12:52:23.176000,"  ""cipher"": algorithms.TripleDES,"
+2025-09-25T12:52:23.337000,/usr/local/lib/python3.11/site-packages/paramiko/transport.py:259: CryptographyDeprecationWarning: TripleDES has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.TripleDES and will be removed from cryptography.hazmat.primitives.ciphers.algorithms in 48.0.0.
+2025-09-25T12:52:23.337000,"  ""class"": algorithms.TripleDES,"
+2025-09-25T12:52:31.279000,	 - Fill accruals reporting data
+2025-09-25T12:52:40.314000,"/src/vf_claim/views/reporting.py:1768: FutureWarning: The default value of numeric_only in DataFrameGroupBy.sum is deprecated. In a future version, numeric_only will default to False. Either specify numeric_only or select only columns which should be valid for the function."
+2025-09-25T12:52:40.314000,"  )[['accrual', 'released']].sum()"
+2025-09-25T12:52:40.356000,		Failed
+2025-09-25T12:52:40.356000,		Time spent: 0h0m
+2025-09-25T12:52:40.356000,		See error message:
+2025-09-25T12:52:40.356000,<class 'AttributeError'>: 'Series' object has no attribute 'aid'
+2025-09-25T12:52:40.361000,[ERROR] 'Series' object has no attribute 'aid'
+2025-09-25T12:52:40.361000,Traceback (most recent call last):
+2025-09-25T12:52:40.361000,"  File ""/src/function_runner.py"", line 180, in function_runner"
+2025-09-25T12:52:40.361000,    run_function(
+2025-09-25T12:52:40.361000,"  File ""/src/function_runner.py"", line 110, in run_function"
+2025-09-25T12:52:40.361000,    function(**kwargs)
+2025-09-25T12:52:40.361000,"  File ""/src/vf_claim/views/reporting.py"", line 74, in job_fill_reporting"
+2025-09-25T12:52:40.361000,    updater.raise_latest_exception()
+2025-09-25T12:52:40.361000,"  File ""/src/vf_lib/progress_updater.py"", line 51, in raise_latest_exception"
+2025-09-25T12:52:40.361000,"    raise_(exc_type, exc_val, exc_tb)"
+2025-09-25T12:52:40.361000,"  File ""/usr/local/lib/python3.11/site-packages/six.py"", line 724, in reraise"
+2025-09-25T12:52:40.361000,    raise value
+2025-09-25T12:52:40.361000,"  File ""/src/vf_claim/views/reporting.py"", line 73, in job_fill_reporting"
+2025-09-25T12:52:40.361000,    fill_reporting(debug=debug)
+2025-09-25T12:52:40.361000,"  File ""/src/vf_claim/views/reporting.py"", line 79, in fill_reporting"
+2025-09-25T12:52:40.361000,    report.fill_reporting()
+2025-09-25T12:52:40.361000,"  File ""/src/vf_claim/views/reporting.py"", line 435, in fill_reporting"
+2025-09-25T12:52:40.361000,"    self.promotion_accrual_df = self._generate_promotion_accruals_daily_df(product_claim_df, media_claim_df)"
+2025-09-25T12:52:40.361000,                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/src/vf_claim/views/reporting.py"", line 748, in _generate_promotion_accruals_daily_df"
+2025-09-25T12:52:40.361000,    self.promotion_accrual_df['{}_gl_code'.format(code_type)] = self.promotion_accrual_df.apply(
+2025-09-25T12:52:40.361000,                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/frame.py"", line 9568, in apply"
+2025-09-25T12:52:40.361000,"    return op.apply().__finalize__(self, method=""apply"")"
+2025-09-25T12:52:40.361000,           ^^^^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/apply.py"", line 764, in apply"
+2025-09-25T12:52:40.361000,    return self.apply_standard()
+2025-09-25T12:52:40.361000,           ^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/apply.py"", line 891, in apply_standard"
+2025-09-25T12:52:40.361000,"    results, res_index = self.apply_series_generator()"
+2025-09-25T12:52:40.361000,                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/apply.py"", line 907, in apply_series_generator"
+2025-09-25T12:52:40.361000,    results[i] = self.f(v)
+2025-09-25T12:52:40.361000,                 ^^^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/src/vf_claim/views/reporting.py"", line 753, in <lambda>"
+2025-09-25T12:52:40.361000,"    row.aid,"
+2025-09-25T12:52:40.361000,    ^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/generic.py"", line 5902, in __getattr__"
+2025-09-25T12:52:40.361000,"    return object.__getattribute__(self, name)"
+2025-09-25T12:52:40.361000,           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.361000,AttributeError: 'Series' object has no attribute 'aid'
+2025-09-25T12:52:40.361000,ERROR:a50f38fb-20af-4dd1-9833-964712050eb5:'Series' object has no attribute 'aid'
+2025-09-25T12:52:40.361000,Traceback (most recent call last):
+2025-09-25T12:52:40.361000,"  File ""/src/function_runner.py"", line 180, in function_runner"
+2025-09-25T12:52:40.361000,    run_function(
+2025-09-25T12:52:40.361000,"  File ""/src/function_runner.py"", line 110, in run_function"
+2025-09-25T12:52:40.361000,    function(**kwargs)
+2025-09-25T12:52:40.361000,"  File ""/src/vf_claim/views/reporting.py"", line 74, in job_fill_reporting"
+2025-09-25T12:52:40.361000,    updater.raise_latest_exception()
+2025-09-25T12:52:40.361000,"  File ""/src/vf_lib/progress_updater.py"", line 51, in raise_latest_exception"
+2025-09-25T12:52:40.361000,"    raise_(exc_type, exc_val, exc_tb)"
+2025-09-25T12:52:40.361000,"  File ""/usr/local/lib/python3.11/site-packages/six.py"", line 724, in reraise"
+2025-09-25T12:52:40.361000,    raise value
+2025-09-25T12:52:40.361000,"  File ""/src/vf_claim/views/reporting.py"", line 73, in job_fill_reporting"
+2025-09-25T12:52:40.361000,    fill_reporting(debug=debug)
+2025-09-25T12:52:40.361000,"  File ""/src/vf_claim/views/reporting.py"", line 79, in fill_reporting"
+2025-09-25T12:52:40.361000,    report.fill_reporting()
+2025-09-25T12:52:40.361000,"  File ""/src/vf_claim/views/reporting.py"", line 435, in fill_reporting"
+2025-09-25T12:52:40.361000,"    self.promotion_accrual_df = self._generate_promotion_accruals_daily_df(product_claim_df, media_claim_df)"
+2025-09-25T12:52:40.361000,                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/src/vf_claim/views/reporting.py"", line 748, in _generate_promotion_accruals_daily_df"
+2025-09-25T12:52:40.361000,    self.promotion_accrual_df['{}_gl_code'.format(code_type)] = self.promotion_accrual_df.apply(
+2025-09-25T12:52:40.361000,                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/frame.py"", line 9568, in apply"
+2025-09-25T12:52:40.361000,"    return op.apply().__finalize__(self, method=""apply"")"
+2025-09-25T12:52:40.361000,           ^^^^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/apply.py"", line 764, in apply"
+2025-09-25T12:52:40.361000,    return self.apply_standard()
+2025-09-25T12:52:40.361000,           ^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/apply.py"", line 891, in apply_standard"
+2025-09-25T12:52:40.361000,"    results, res_index = self.apply_series_generator()"
+2025-09-25T12:52:40.361000,                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/apply.py"", line 907, in apply_series_generator"
+2025-09-25T12:52:40.361000,    results[i] = self.f(v)
+2025-09-25T12:52:40.361000,                 ^^^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/src/vf_claim/views/reporting.py"", line 753, in <lambda>"
+2025-09-25T12:52:40.361000,"    row.aid,"
+2025-09-25T12:52:40.361000,    ^^^^^^^
+2025-09-25T12:52:40.361000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/generic.py"", line 5902, in __getattr__"
+2025-09-25T12:52:40.361000,"    return object.__getattribute__(self, name)"
+2025-09-25T12:52:40.361000,           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.361000,AttributeError: 'Series' object has no attribute 'aid'
+2025-09-25T12:52:40.362000,Traceback (most recent call last):
+2025-09-25T12:52:40.362000,"  File ""/src/function_runner.py"", line 180, in function_runner"
+2025-09-25T12:52:40.363000,    run_function(
+2025-09-25T12:52:40.363000,"  File ""/src/function_runner.py"", line 110, in run_function"
+2025-09-25T12:52:40.363000,    function(**kwargs)
+2025-09-25T12:52:40.363000,"  File ""/src/vf_claim/views/reporting.py"", line 74, in job_fill_reporting"
+2025-09-25T12:52:40.363000,    updater.raise_latest_exception()
+2025-09-25T12:52:40.363000,"  File ""/src/vf_lib/progress_updater.py"", line 51, in raise_latest_exception"
+2025-09-25T12:52:40.363000,"    raise_(exc_type, exc_val, exc_tb)"
+2025-09-25T12:52:40.363000,"  File ""/usr/local/lib/python3.11/site-packages/six.py"", line 724, in reraise"
+2025-09-25T12:52:40.363000,    raise value
+2025-09-25T12:52:40.363000,"  File ""/src/vf_claim/views/reporting.py"", line 73, in job_fill_reporting"
+2025-09-25T12:52:40.363000,    fill_reporting(debug=debug)
+2025-09-25T12:52:40.363000,"  File ""/src/vf_claim/views/reporting.py"", line 79, in fill_reporting"
+2025-09-25T12:52:40.363000,    report.fill_reporting()
+2025-09-25T12:52:40.363000,"  File ""/src/vf_claim/views/reporting.py"", line 435, in fill_reporting"
+2025-09-25T12:52:40.363000,"    self.promotion_accrual_df = self._generate_promotion_accruals_daily_df(product_claim_df, media_claim_df)"
+2025-09-25T12:52:40.363000,                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.363000,"  File ""/src/vf_claim/views/reporting.py"", line 748, in _generate_promotion_accruals_daily_df"
+2025-09-25T12:52:40.363000,    self.promotion_accrual_df['{}_gl_code'.format(code_type)] = self.promotion_accrual_df.apply(
+2025-09-25T12:52:40.364000,                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.364000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/frame.py"", line 9568, in apply"
+2025-09-25T12:52:40.366000,"    return op.apply().__finalize__(self, method=""apply"")"
+2025-09-25T12:52:40.366000,           ^^^^^^^^^^
+2025-09-25T12:52:40.366000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/apply.py"", line 764, in apply"
+2025-09-25T12:52:40.366000,    return self.apply_standard()
+2025-09-25T12:52:40.366000,           ^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.366000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/apply.py"", line 891, in apply_standard"
+2025-09-25T12:52:40.367000,"    results, res_index = self.apply_series_generator()"
+2025-09-25T12:52:40.367000,                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.367000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/apply.py"", line 907, in apply_series_generator"
+2025-09-25T12:52:40.367000,    results[i] = self.f(v)
+2025-09-25T12:52:40.367000,                 ^^^^^^^^^
+2025-09-25T12:52:40.367000,"  File ""/src/vf_claim/views/reporting.py"", line 753, in <lambda>"
+2025-09-25T12:52:40.368000,"    row.aid,"
+2025-09-25T12:52:40.368000,    ^^^^^^^
+2025-09-25T12:52:40.368000,"  File ""/usr/local/lib/python3.11/site-packages/pandas/core/generic.py"", line 5902, in __getattr__"
+2025-09-25T12:52:40.369000,"    return object.__getattribute__(self, name)"
+2025-09-25T12:52:40.369000,           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.370000,AttributeError: 'Series' object has no attribute 'aid'. Did you mean: 'add'?
+2025-09-25T12:52:40.370000,"During handling of the above exception, another exception occurred:"
+2025-09-25T12:52:40.370000,Traceback (most recent call last):
+2025-09-25T12:52:40.370000,"  File ""<frozen runpy>"", line 198, in _run_module_as_main"
+2025-09-25T12:52:40.370000,"  File ""<frozen runpy>"", line 88, in _run_code"
+2025-09-25T12:52:40.370000,"  File ""/src/function_runner.py"", line 196, in <module>"
+2025-09-25T12:52:40.370000,    function_runner()
+2025-09-25T12:52:40.370000,"  File ""/usr/local/lib/python3.11/site-packages/click/core.py"", line 1442, in __call__"
+2025-09-25T12:52:40.370000,"    return self.main(*args, **kwargs)"
+2025-09-25T12:52:40.370000,           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.370000,"  File ""/usr/local/lib/python3.11/site-packages/click/core.py"", line 1363, in main"
+2025-09-25T12:52:40.371000,    rv = self.invoke(ctx)
+2025-09-25T12:52:40.371000,         ^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.371000,"  File ""/usr/local/lib/python3.11/site-packages/click/core.py"", line 1226, in invoke"
+2025-09-25T12:52:40.371000,"    return ctx.invoke(self.callback, **ctx.params)"
+2025-09-25T12:52:40.371000,           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.371000,"  File ""/usr/local/lib/python3.11/site-packages/click/core.py"", line 794, in invoke"
+2025-09-25T12:52:40.371000,"    return callback(*args, **kwargs)"
+2025-09-25T12:52:40.371000,           ^^^^^^^^^^^^^^^^^^^^^^^^^
+2025-09-25T12:52:40.371000,"  File ""/src/function_runner.py"", line 192, in function_runner"
+2025-09-25T12:52:40.372000,    raise FunctionRunnerException(error_message)
+2025-09-25T12:52:40.372000,"FunctionRunnerException: There was an error while executing the pipeline_execution_id: a50f38fb-20af-4dd1-9833-964712050eb5, error_type: <class 'AttributeError'> error_msg: 'Series' object has no attribute 'aid'"
