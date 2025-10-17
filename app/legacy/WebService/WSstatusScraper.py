@@ -126,11 +126,18 @@ def scrape_pipeline_status(bifrost_instance: str, filter_enabled: str, headlessP
                     status_text = "Never Executed"
 
                 pipeline_status_dict[pipeline_name] = status_text
-                #TODO CAMBIARE STRUTTURA OUTPUT SECONDO DOCUMENTAZIONE
+                
+            
+
             # Go to next page
             page.click("text=Next")
             page.wait_for_load_state()
             page.wait_for_timeout(2000)
 
         browser.close()
-    return pipeline_status_dict
+        
+        converted = [
+                {"pipeline_name": pipeline_name, "status": status_text}
+                for pipeline_name, status_text in pipeline_status_dict.items()
+            ]
+    return converted
