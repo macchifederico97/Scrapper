@@ -34,6 +34,22 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
 
         page.locator(".bifrostcss-fFaJCf").nth(6).click()  # CLICCO SULLO STORICO DELLA PIPELINE
         page.wait_for_timeout(500)
+
+        if "/history" in page.url:
+            print("URL corretto!")
+        else:
+            print("URL inatteso:", page.url)
+            # Vai su una pipeline con /steps
+
+            # Cambia URL a /history senza ricaricare
+            page.evaluate("""
+                const path = window.location.pathname;
+                const base = path.substring(0, path.lastIndexOf('/'));
+                const nuovaUrl = base + '/history';
+                window.history.pushState({}, '', nuovaUrl);
+            """)
+            page.wait_for_timeout(2000)
+
         page.locator(".bifrostcss-bnFVuH").nth(0).click()  # CLICCO SULL'ULTIMA ESECUZIONE
         page.wait_for_timeout(500)
 

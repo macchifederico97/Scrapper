@@ -1,10 +1,10 @@
-import os
+from datetime import datetime
 import time
 import json
 from flask import Flask, request, jsonify
-from core import login_and_cache_state, rerun_pipeline, runtime_pipeline, log_pipeline, fullExtract_pipeline, extract_userStatus, status_pipeline, getID_pipeline
+from core import login_and_cache_state, rerun_pipeline, runtime_pipeline, log_pipeline, fullExtract_pipeline, extract_userStatus, status_pipeline, getID_pipeline, setFileMapping
 from legacy.WebService.ConfigParser import parse_config
-from filelock import FileLock, Timeout
+from filelock import FileLock
 
 # Config: Log-In Refresh Parameters
 LOCK_FILE = "state.lock"
@@ -43,12 +43,30 @@ def ensure_valid_login():   #Handle Login Check and Refresh
             else:
                 print("Login already updated")
 
+def setFileMapping(bifrost_instance: str):    #Update the pipeline mapping file if empty or older than 24 hours
+    if bifrost_instance == "":
+        with open(f"client/bifrost_instance.json", "r", encoding="utf-8") as f:
+                instance = json.load(f)
+        for bifrost_instance in instance["bifrost_instances"]:
+            with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
+                    pipelines = json.load(f)
+            if len(pipelines["pipelines"]) == 0 and (datetime.now() - pipelines["last_updated"]) < datetime.timedelta(hours=24):
+                setFileMapping(bifrost_instance)
+    else:
+        with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
+                pipelines = json.load(f)
+        if len(pipelines["pipelines"]) == 0 and (datetime.now() - pipelines["last_updated"]) < datetime.timedelta(hours=24):
+            setFileMapping(bifrost_instance)
+
+
 def create_app():
     app = Flask(__name__)
 
     @app.before_request
     def check_login_before_request():   #Before every API request, check if login state is updated
+        print("Checking login state before request..." )#+ datetime.datetime.now().isoformat())
         ensure_valid_login()
+        setFileMapping(request.args.get("bifrost_instance", ""))
 
     @app.get("/healthz")
     def healthz():
