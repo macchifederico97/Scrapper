@@ -44,14 +44,15 @@ def ensure_valid_login():   #Handle Login Check and Refresh
                 print("Login already updated")
 
 def setFileMapping(bifrost_instance: str):    #Update the pipeline mapping file if empty or older than 24 hours
-    if bifrost_instance == "":
+    if bifrost_instance == "" or bifrost_instance is None:
         with open(f"client/bifrost_instance.json", "r", encoding="utf-8") as f:
                 instance = json.load(f)
-        for bifrost_instance in instance["bifrost_instances"]:
-            with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
+        for bifrost_instance_json in instance:
+            name_instance = bifrost_instance_json.get("bifrost_instance")
+            with open(f"client/{name_instance}/pipeline.json", "r", encoding="utf-8") as f:
                     pipelines = json.load(f)
             if len(pipelines["pipelines"]) == 0 and (datetime.now() - pipelines["last_updated"]) < datetime.timedelta(hours=24):
-                setFileMapping(bifrost_instance)
+                setFileMapping(name_instance)
     else:
         with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
                 pipelines = json.load(f)
@@ -64,9 +65,9 @@ def create_app():
 
     @app.before_request
     def check_login_before_request():   #Before every API request, check if login state is updated
-        print("Checking login state before request..." )#+ datetime.datetime.now().isoformat())
+        print("Checking login state before request..." )
         ensure_valid_login()
-        setFileMapping(request.args.get("bifrost_instance", ""))
+        setFileMapping(None)
 
     @app.get("/healthz")
     def healthz():

@@ -40,6 +40,7 @@ def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool
         page.wait_for_timeout(500)
 
         # Extract start and finish times (as strings from the page)
+        status = page.locator(".bifrostcss-kpbtZs").nth(0).inner_text()
         startTime = page.locator(".bifrostcss-bItxDa").nth(0).inner_text()
         finishTime = page.locator(".bifrostcss-bItxDa").nth(1).inner_text()
         page.wait_for_timeout(500)
@@ -53,7 +54,7 @@ def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool
         finish_dt = datetime.strptime(finishTime, dt_format)
         duration_minutes = (finish_dt - start_dt).total_seconds() / 60.0
 
-        return startTime, finishTime, duration_minutes, schedule
+        return startTime, finishTime, duration_minutes, schedule, status
 
 
 
@@ -80,8 +81,8 @@ def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool
             pipelines = json.load(f)
         print(f"Loaded {len(pipelines)} pipelines from JSON file.")
         for pipeline in pipelines["pipelines"]:
-                startTime, finishTime, duration_minutes, schedule = getPipelineInformations(pipeline["pipeline_name"], pipeline["pipeline_id"])
-                pipeDict = {"pipeline_name": pipeline["pipeline_name"], "status": "valid test", "start_time": startTime,
+                startTime, finishTime, duration_minutes, schedule, status = getPipelineInformations(pipeline["pipeline_name"], pipeline["pipeline_id"])
+                pipeDict = {"pipeline_name": pipeline["pipeline_name"], "status": status, "start_time": startTime,
                         "finish_time": finishTime, "duration_minutes": duration_minutes, "schedule": schedule}
                 outputList.append(pipeDict)     #Creation of the dict with pipeline information and appended to the output list
 
