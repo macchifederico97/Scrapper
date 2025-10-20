@@ -22,7 +22,7 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
 
         #GET PIPELINE ID
         with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
-            data = json.load(file)
+            data = json.load(f)
 
         pipeline_id = None
         flIdFound = False
@@ -33,7 +33,16 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
                 break
 
         if flIdFound:
-            # MANUAL SEARCH, PIPELINE_ID NOT FOUND NEL DATABASE
+            # AUTO SEARCH TRAMITE PIPELINE_ID NEL DATABASE
+            page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
+            page.wait_for_load_state()
+            page.wait_for_timeout(6000)
+
+            # Filter pipeline
+            page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{pipeline_id}/history")
+            page.wait_for_load_state()
+        else:
+           # MANUAL SEARCH, PIPELINE_ID NOT FOUND NEL DATABASE
             page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
             page.wait_for_load_state()
             page.wait_for_timeout(6000)
@@ -47,14 +56,6 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
 
             page.locator(".bifrostcss-fFaJCf").nth(6).click()  # CLICCO SULLO STORICO DELLA PIPELINE
             page.wait_for_timeout(500)
-        else:
-            # AUTO SEARCH TRAMITE PIPELINE_ID NEL DATABASE
-            page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{pipeline_id}/history")
-            page.wait_for_load_state()
-            page.wait_for_timeout(6000)
-
-            if page.locator(".bifrostcss-bnFVuH").count()==0:   #GESTISCO IL CASO IN CUI NON TROVO LA PIPELINE
-                return "PipelineNotfound"
 
         page.locator(".bifrostcss-bnFVuH").nth(0).click()  # CLICCO SULL'ULTIMA ESECUZIONE
         page.wait_for_timeout(500)
