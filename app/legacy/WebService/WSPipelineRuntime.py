@@ -31,9 +31,9 @@ def scrape_pipeline_last_run(pipeline_filter: str, bifrost_instance: str, headle
         page.wait_for_timeout(1000)
         
         if "/history" in page.url:
-            print("URL corretto!")
+            print("correct URL!")
         else:
-            print("URL inatteso:", page.url)
+            print("Uncorrect URL:", page.url)
             # Vai su una pipeline con /steps
 
             # Cambia URL a /history senza ricaricare

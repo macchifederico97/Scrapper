@@ -9,7 +9,7 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
     """
     script_dir = os.path.dirname(os.path.abspath(__file__)) #PATH ATTUALE DELLO SCRIPT
     download_dir = os.path.join(script_dir, "log")  #DOWNLOAD PATH
-    os.makedirs("log", exist_ok=True)   #CREO LA CARTELLA DI DOWNLOAD DEI LOG SE NON ESISTE
+    os.makedirs("log", exist_ok=True)   #CREATE THE LOG DOWNLOAD FOLDER IF IT DOES NOT EXIST
 
     with sync_playwright() as p:
         # Launch browser (using Chrome already installed)
@@ -54,23 +54,22 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
             if page.locator(".bifrostcss-eXwpzm.undefined").count() == 0:
                 return "pipelineNotFound"  # error raised if no pipeline has been found
 
-            page.locator(".bifrostcss-fFaJCf").nth(6).click()  # CLICCO SULLO STORICO DELLA PIPELINE
+            page.locator(".bifrostcss-fFaJCf").nth(6).click()  #CLICK ON THE PIPELINE HISTORY
             page.wait_for_timeout(500)
 
-        page.locator(".bifrostcss-bnFVuH").nth(0).click()  # CLICCO SULL'ULTIMA ESECUZIONE
+        page.locator(".bifrostcss-bnFVuH").nth(0).click()  #CLICK ON THE LAST EXECUTION
         page.wait_for_timeout(500)
 
-        #CLICCARE SUL PULSANTE DOWNLOAD LOG
-
-        if page.locator(".bifrostcss-hVuvHH").count() == 0: #GESTISCO IL CASO IN CUI NON HO LOG PER LA PIPELINE
+        #CLICK ON THE DOWNLOAD LOG BUTTON
+        if page.locator(".bifrostcss-hVuvHH").count() == 0: #HANDLE THE CASE WHERE I HAVE NO LOG FOR THE PIPELINE
             print("No log found for pipeline: " + str(pipeline_filter)) #DEBUGGING
             return "LogNotFound"
 
         outputList = []
 
-        for i in range(page.locator(".bifrostcss-hVuvHH").count()): #PER GESTIRE IL CASO DI QUANDO UN ESECUIONE HA PIU LOG
+        for i in range(page.locator(".bifrostcss-hVuvHH").count()): #TO HANDLE THE CASE OF WHEN AN EXECUTION HAS MORE THAN ONE LOG
             with page.expect_download() as download_info:
-                page.locator(".bifrostcss-hVuvHH").nth(i).click()   #CLICCO IL PULSANTE DOWNLOAD LOG
+                page.locator(".bifrostcss-hVuvHH").nth(i).click()   #CLICK THE DOWNLOAD LOG BUTTON
                 print("Downloading log nr: " + str(i + 1)) #DEBUGGING
 
                 download = download_info.value
@@ -79,16 +78,15 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
                 download.save_as(save_path)
                 print(f"Download nr.{i + 1} finished")  #DEBUGGING
 
-                #GESTIONE DELL'OUTPUT
+                #OUTPUT MANAGEMENT
                 with open(save_path, newline="", encoding="utf-8") as file:
                     iter=0
                     reader = csv.DictReader(file)
-                    fileDict = {}   #SALVO IL CONTENUTO DEL LOG SCARICATO IN UN DICT
+                    fileDict = {}   #SAVE THE CONTENT OF THE DOWNLOADED LOG IN A DICT
                     for row in reader:
                         iter+=1
-                        #print(row["timestamp"][:-3]+str(iter % 100).zfill(3))
                         fileDict[row["timestamp"]+str(iter % 100).zfill(3)] = row["message"]
-                    outputList.append(fileDict) #INSERISCO IL DICT NELLA LISTA DI OUTPUT
+                    outputList.append(fileDict) #INSERT THE DICT INTO THE OUTPUT LIST
 
 
         page.wait_for_timeout(3000)
@@ -99,7 +97,7 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
 
         for filename in os.listdir("log"):
             file_path = os.path.join("log", filename)
-            if os.path.isfile(file_path):  # elimina solo i file
+            if os.path.isfile(file_path):  #delete only files
                 os.remove(file_path)
 
         return outputList

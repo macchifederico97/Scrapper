@@ -6,7 +6,8 @@ from playwright.sync_api import sync_playwright
 from pathlib import Path
 import json
 
-def getPipelineNames(page, bifrost_instance:str, statusFilter: bool): #FUNZIONE CHE RITORNA IL NOME E L'ID DI TUTTE LE PIPELINE NEL SISTEMA
+#FUNCTION THAT RETURNS THE NAME AND ID OF ALL PIPELINES IN THE SYSTEM
+def getPipelineNames(page, bifrost_instance:str, statusFilter: bool): 
     def filter_status_enabled(page):
         """
         Applies the 'Pipeline Status = Enabled' filter on the page.

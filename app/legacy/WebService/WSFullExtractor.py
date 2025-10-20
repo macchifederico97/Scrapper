@@ -2,10 +2,6 @@ import json
 from playwright.sync_api import sync_playwright
 from datetime import datetime
 
-
-
-
-
 def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool):
     """
     Extracts full infos from all the pipelines in the system.
@@ -55,12 +51,6 @@ def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool
         duration_minutes = (finish_dt - start_dt).total_seconds() / 60.0
 
         return startTime, finishTime, duration_minutes, schedule, status
-
-
-
-
-    #pipelineStatusDict = scrape_pipeline_status(bifrost_instance=bifrost_instance, filter_enabled=filter_enabled, headlessPar= headlessPar)   #Getting a dict with all the pipelines and their last run status
-    #pipelineNames = pipelineStatusDict.keys()   #Getting the names of all the pipelines in Bifrost
 
     outputList = [] #Output list containing pipeline information dict
 
