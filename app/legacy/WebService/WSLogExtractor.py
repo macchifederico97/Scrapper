@@ -1,5 +1,6 @@
 import os
 import csv
+import json
 from playwright.sync_api import sync_playwright
 
 def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool):
@@ -19,36 +20,41 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
         page = context.new_page()
         page.set_viewport_size({"width": 1600, "height": 1200})
 
-        # Go to the page
-        page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
-        page.wait_for_load_state()
-        page.wait_for_timeout(6000)
+        #GET PIPELINE ID
+        with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
+            data = json.load(file)
 
-        # Filter pipeline
-        page.get_by_placeholder("Search by name...").type(pipeline_filter)
-        page.wait_for_timeout(3000)
+        pipeline_id = None
+        flIdFound = False
+        for item in data["pipelines"]:
+            if item["pipeline_name"] == pipeline_filter:
+                pipeline_id = item["pipeline_id"]
+                flIdFound = True
+                break
 
+        if flIdFound:
+            # MANUAL SEARCH, PIPELINE_ID NOT FOUND NEL DATABASE
+            page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
+            page.wait_for_load_state()
+            page.wait_for_timeout(6000)
 
-        if page.locator(".bifrostcss-eXwpzm.undefined").count() == 0:
-            return "pipelineNotFound"   #error raised if no pipeline has been found
+            # Filter pipeline
+            page.get_by_placeholder("Search by name...").type(pipeline_filter)
+            page.wait_for_timeout(3000)
 
-        page.locator(".bifrostcss-fFaJCf").nth(6).click()  # CLICCO SULLO STORICO DELLA PIPELINE
-        page.wait_for_timeout(500)
+            if page.locator(".bifrostcss-eXwpzm.undefined").count() == 0:
+                return "pipelineNotFound"  # error raised if no pipeline has been found
 
-        if "/history" in page.url:
-            print("URL corretto!")
+            page.locator(".bifrostcss-fFaJCf").nth(6).click()  # CLICCO SULLO STORICO DELLA PIPELINE
+            page.wait_for_timeout(500)
         else:
-            print("URL inatteso:", page.url)
-            # Vai su una pipeline con /steps
+            # AUTO SEARCH TRAMITE PIPELINE_ID NEL DATABASE
+            page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{pipeline_id}/history")
+            page.wait_for_load_state()
+            page.wait_for_timeout(6000)
 
-            # Cambia URL a /history senza ricaricare
-            page.evaluate("""
-                const path = window.location.pathname;
-                const base = path.substring(0, path.lastIndexOf('/'));
-                const nuovaUrl = base + '/history';
-                window.history.pushState({}, '', nuovaUrl);
-            """)
-            page.wait_for_timeout(2000)
+            if page.locator(".bifrostcss-bnFVuH").count()==0:   #GESTISCO IL CASO IN CUI NON TROVO LA PIPELINE
+                return "PipelineNotfound"
 
         page.locator(".bifrostcss-bnFVuH").nth(0).click()  # CLICCO SULL'ULTIMA ESECUZIONE
         page.wait_for_timeout(500)
@@ -77,7 +83,6 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
                     iter=0
                     reader = csv.DictReader(file)
                     fileDict = {}   #SALVO IL CONTENUTO DEL LOG SCARICATO IN UN DICT
-                    #TODO CORREGGERE IL PROBLEMA DI TIMESTAMP NON UNIVOCO
                     for row in reader:
                         iter+=1
                         #print(row["timestamp"][:-3]+str(iter % 100).zfill(3))
