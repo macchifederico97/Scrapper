@@ -66,7 +66,7 @@ def fullExtract_pipeline(status_filter: str, bifrost_instance: str) -> dict:
     return res
 
 #Pipeline full extract function
-def setFileMapping(bifrost_instance: str) -> dict:
+def setFileMappingCore(bifrost_instance: str) -> dict:
     print("Starting fullExtract_pipeline function")
     res = setFileMappingPy(bifrost_instance, HEADLESS)
     return res

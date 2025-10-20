@@ -2,7 +2,7 @@ from datetime import datetime
 import time
 import json
 from flask import Flask, request, jsonify
-from core import login_and_cache_state, rerun_pipeline, runtime_pipeline, log_pipeline, fullExtract_pipeline, extract_userStatus, status_pipeline, getID_pipeline, setFileMapping
+from core import login_and_cache_state, rerun_pipeline, runtime_pipeline, log_pipeline, fullExtract_pipeline, extract_userStatus, status_pipeline, getID_pipeline, setFileMappingCore
 from legacy.WebService.ConfigParser import parse_config
 from filelock import FileLock
 
@@ -52,12 +52,12 @@ def setFileMapping(bifrost_instance: str):    #Update the pipeline mapping file 
             with open(f"client/{name_instance}/pipeline.json", "r", encoding="utf-8") as f:
                     pipelines = json.load(f)
             if len(pipelines["pipelines"]) == 0 and (datetime.now() - pipelines["last_updated"]) < datetime.timedelta(hours=24):
-                setFileMapping(name_instance)
+                setFileMappingCore(name_instance)
     else:
         with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
                 pipelines = json.load(f)
         if len(pipelines["pipelines"]) == 0 and (datetime.now() - pipelines["last_updated"]) < datetime.timedelta(hours=24):
-            setFileMapping(bifrost_instance)
+            setFileMappingCore(bifrost_instance)
 
 
 def create_app():

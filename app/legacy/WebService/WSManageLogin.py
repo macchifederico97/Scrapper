@@ -52,3 +52,5 @@ def visualfabriq_login(organisation_id: str, mail: str, password: str) -> str:
         else:
             browser.close()
             return "User already logged in"
+
+print(visualfabriq_login("nttdata","",""))

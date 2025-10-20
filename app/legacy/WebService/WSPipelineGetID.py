@@ -88,7 +88,7 @@ def getPipelineID(pipelineName: str, page):  #Lightweight function of scrape_pip
 
     return pipelineName, pipelineID, schedule
 
-
+#TODO AGGIUNGERE IL PARAMETRO STATUSFILTER, PER POTER FILTRARE LE PIPELINE PRIMA DI ESEGUIRE LA FUNZIONE
 def getID_pipelines(bifrost_instance: str, headlessPar: bool):
     """
     Scrapes the last pipeline execution filtered by name.
@@ -151,4 +151,4 @@ def getID_pipelines(bifrost_instance: str, headlessPar: bool):
         return outputList
 
 
-print(getID_pipelines("nttdata", False))    #DEBUG & TESTING
+#print(getID_pipelines("nttdata", False))    #DEBUG & TESTING
