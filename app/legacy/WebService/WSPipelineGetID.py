@@ -120,7 +120,7 @@ def getID_pipelines(bifrost_instance: str, headlessPar: bool):
 
         # Save output to JSON file
 
-        # Percorso completo
+        # Complete path
         cartella = Path(f"client/{bifrost_instance}")
         cartella.mkdir(parents=True, exist_ok=True)
         file_path = cartella / "pipeline.json"
@@ -139,11 +139,11 @@ def getID_pipelines(bifrost_instance: str, headlessPar: bool):
         #OUTPUT FILE TESTING
         nome_cercato = "TTR - Contracts Status update"
 
-        # Lettura dal file
+        # Reading from file
         with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
             pipelines = json.load(f)
 
-        # Estrazione dell'ID
+        # ID Extraction
         id_pipeline = next((p["pipeline_id"] for p in pipelines["pipelines"] if p["pipeline_name"] == nome_cercato), None)
         print(f"L'ID della pipeline '{nome_cercato}' è: {id_pipeline}")
         #END OF OUTPUT FILE TESTING
@@ -151,4 +151,4 @@ def getID_pipelines(bifrost_instance: str, headlessPar: bool):
         return outputList
 
 
-print(getID_pipelines("nttdata", False))    #DEBUG & TESTING
+#print(getID_pipelines("nttdata", False))    #DEBUG & TESTING
