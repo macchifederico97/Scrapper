@@ -4,7 +4,10 @@ from playwright.sync_api import sync_playwright
 #from WSstatusScraper import _filter_status_enabled
 #from datetime import datetime
 from pathlib import Path
-import json
+#import json
+
+from pipelineFileFunctions import smartAppendData
+
 
 #FUNCTION THAT RETURNS THE NAME AND ID OF ALL PIPELINES IN THE SYSTEM
 def getPipelineNames(page, bifrost_instance:str, statusFilter: bool): 
@@ -55,14 +58,14 @@ def getPipelineNames(page, bifrost_instance:str, statusFilter: bool):
         if first_pipeline_name in checkpipelineNames:
             break  # Already visited this page
 
-        for i in range(count):
+        for i in range(count):  #TO CHECK, FASTER
             element_name = elements_name.nth(i).inner_text()
             element_schedule = elements_status_schedule.nth(i).locator("td").nth(6).inner_text()
             element_status = elements_status_schedule.nth(i).locator("td").nth(2).inner_text()
 
-            pipiline_ID = page.locator("a[href*='/pipelines/'][href*='history']").nth(i).get_attribute("href").split("pipelines/")[1].split("/")[0]
-            print(element_name + " - " + pipiline_ID + " - " + element_schedule + " - " + element_status)
-            pipelineNames.append(element_name + " -- " + pipiline_ID + " -- " + element_schedule + " -- " + element_status)
+            pipeline_ID = page.locator("a[href*='/pipelines/'][href*='history']").nth(i).get_attribute("href").split("pipelines/")[1].split("/")[0]
+            print(element_name + " - " + pipeline_ID + " - " + element_schedule + " - " + element_status)
+            pipelineNames.append(element_name + " -- " + pipeline_ID + " -- " + element_schedule + " -- " + element_status)
             checkpipelineNames.append(element_name)
 
         # Go to next page
@@ -130,7 +133,7 @@ def getID_pipelines(bifrost_instance: str, filterEnabled: bool, headlessPar: boo
                 print(f"Processing pipeline: {pipelineName}")
                 count += 1
                 print(f"Progress: {count}/{countPipelines}")
-                print(count)
+                #print(count)
                 pipelineName, pipelineID, schedule, status = pipelineName.split(" -- ", 3)
                 pipeDict = {"pipeline_name": pipelineName, "pipeline_id": pipelineID, "schedule": schedule, "status": True if status == "Enabled" else False}
                 outputList.append(pipeDict)     #Creation of the dict with pipeline information and appended to the output list
@@ -150,23 +153,28 @@ def getID_pipelines(bifrost_instance: str, filterEnabled: bool, headlessPar: boo
             "last_updated": timestamp,
             "pipelines": outputList
         }
-        # Scrittura
+        '''
+        #TODO Scrittura, da sostituire con scrittura intelligente
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(fileData, f, indent=4)
+        '''
 
+        smartAppendData(str(file_path), fileData)
+
+        '''
         #OUTPUT FILE TESTING
         nome_cercato = "TTR - Contracts Status update"
 
         # Reading from file
         with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
             pipelines = json.load(f)
-
+        
         # ID Extraction
         id_pipeline = next((p["pipeline_id"] for p in pipelines["pipelines"] if p["pipeline_name"] == nome_cercato), None)
         print(f"L'ID della pipeline '{nome_cercato}' è: {id_pipeline}")
         #END OF OUTPUT FILE TESTING
-
+        '''
         return outputList
 
 
-#print(getID_pipelines("nttdata",true, False))    #DEBUG & TESTING
+print(getID_pipelines("nttdata",False, False))    #DEBUG & TESTING
