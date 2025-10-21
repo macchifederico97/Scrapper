@@ -42,9 +42,9 @@ def runtime_pipeline(pipeline_id: str, bifrost_instance: str) -> dict:
     return res
 
 #Pipeline ID function
-def getID_pipeline(bifrost_instance: str) -> dict:
+def getID_pipeline(bifrost_instance: str, filterEnabled: bool) -> dict:
     print("Starting getID_pipeline function")
-    res = getID_pipelines(bifrost_instance)
+    res = getID_pipelines(bifrost_instance, filterEnabled, HEADLESS)
     return res
 
 #Pipeline status function
@@ -66,9 +66,9 @@ def fullExtract_pipeline(status_filter: str, bifrost_instance: str) -> dict:
     return res
 
 #Pipeline full extract function
-def setFileMapping(bifrost_instance: str) -> dict:
+def setFileMappingCore(bifrost_instance: str, filterEnabled) -> dict:
     print("Starting fullExtract_pipeline function")
-    res = setFileMappingPy(bifrost_instance, HEADLESS)
+    res = setFileMappingPy(bifrost_instance, filterEnabled, HEADLESS)
     return res
 
 #Pipeline user status function

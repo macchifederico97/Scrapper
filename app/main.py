@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 import json
 from flask import Flask, request, jsonify
-from core import login_and_cache_state, rerun_pipeline, runtime_pipeline, log_pipeline, fullExtract_pipeline, extract_userStatus, status_pipeline, getID_pipeline, setFileMapping
+from core import login_and_cache_state, rerun_pipeline, runtime_pipeline, log_pipeline, fullExtract_pipeline, extract_userStatus, status_pipeline, getID_pipeline, setFileMappingCore
 from legacy.WebService.ConfigParser import parse_config
 from filelock import FileLock
 
@@ -43,7 +43,7 @@ def ensure_valid_login():   #Handle Login Check and Refresh
             else:
                 print("Login already updated")
 
-def setFileMapping(bifrost_instance: str):    #Update the pipeline mapping file if empty or older than 24 hours
+def setFileMapping(bifrost_instance: str, filterEnabled: bool):    #Update the pipeline mapping file if empty or older than 24 hours
     if bifrost_instance == "" or bifrost_instance is None:
         with open(f"client/bifrost_instance.json", "r", encoding="utf-8") as f:
                 instance = json.load(f)
@@ -51,13 +51,13 @@ def setFileMapping(bifrost_instance: str):    #Update the pipeline mapping file 
             name_instance = bifrost_instance_json.get("bifrost_instance")
             with open(f"client/{name_instance}/pipeline.json", "r", encoding="utf-8") as f:
                     pipelines = json.load(f)
-            if len(pipelines["pipelines"]) == 0 and (datetime.now() - pipelines["last_updated"]) < datetime.timedelta(hours=24):
-                setFileMapping(name_instance)
+            #if len(pipelines["pipelines"]) == 0 and (datetime.now() - pipelines["last_updated"]) < timedelta(hours=24):
+            setFileMappingCore(name_instance, filterEnabled)
     else:
         with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
                 pipelines = json.load(f)
-        if len(pipelines["pipelines"]) == 0 and (datetime.now() - pipelines["last_updated"]) < datetime.timedelta(hours=24):
-            setFileMapping(bifrost_instance)
+        if len(pipelines["pipelines"]) == 0 and (datetime.now() - pipelines["last_updated"]) < timedelta(hours=24):
+            setFileMappingCore(bifrost_instance, filterEnabled)
 
 
 def create_app():
@@ -67,7 +67,7 @@ def create_app():
     def check_login_before_request():   #Before every API request, check if login state is updated
         print("Checking login state before request..." )
         ensure_valid_login()
-        setFileMapping(None)
+        setFileMapping(None, False)
 
     @app.get("/healthz")
     def healthz():
@@ -108,10 +108,11 @@ def create_app():
     def pipeline_getID():
         print("pipeline_runtime: Starting")
         bifrost_instance = request.args.get("bifrost_instance")
+        filterEnabled = request.args.get("filter")
         if not bifrost_instance:
             return jsonify({"error": "bifrost_instance required"}), 400
         try:
-            res = getID_pipeline(bifrost_instance)
+            res = getID_pipeline(bifrost_instance, filterEnabled=True if filterEnabled == "true" else False)
             print("pipeline_runtime: Completed")
             return jsonify(res)
         except Exception as e:
