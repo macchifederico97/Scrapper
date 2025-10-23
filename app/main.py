@@ -190,3 +190,4 @@ app = create_app()
 ensure_valid_login() #Manage login after creating the app
 print("Login completed, calls can be made now")
 
+#COMMENT FOR DANIELE TEST COMMIT
