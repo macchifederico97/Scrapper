@@ -138,7 +138,7 @@ def getID_pipelines(bifrost_instance: str, filterEnabled: bool, headlessPar: boo
                 print(f"Progress: {count}/{countPipelines}")
                 #print(count)
                 pipelineName, pipelineID, schedule, status = pipelineName.split(" -- ", 3)
-                pipeDict = {"pipeline_name": pipelineName, "pipeline_id": pipelineID, "schedule": schedule, "status": True if status == "Enabled" else False}
+                pipeDict = {"pipeline_name": pipelineName, "pipeline_id": pipelineID, "schedule": schedule, "status": status}
                 outputList.append(pipeDict)     #Creation of the dict with pipeline information and appended to the output list
         browser.close()
 
@@ -181,4 +181,4 @@ def getID_pipelines(bifrost_instance: str, filterEnabled: bool, headlessPar: boo
         return outputList
 
 
-#print(getID_pipelines("nttdata",False, False))    #DEBUG & TESTING
+print(getID_pipelines("nttdata",False, False))    #DEBUG & TESTING

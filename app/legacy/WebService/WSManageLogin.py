@@ -45,7 +45,7 @@ def visualfabriq_login(organisation_id: str, mail: str, password: str) -> str:
                 page.wait_for_timeout(8000)  # Wait until the page is fully loaded
 
             # Save login state (cookies + localStorage) into a file
-            page.context.storage_state(path="../../state.json")
+            page.context.storage_state(path="state.json")
             browser.close()
             print("User logged in")
             return "Login file 'state.json' created correctly"
@@ -53,4 +53,4 @@ def visualfabriq_login(organisation_id: str, mail: str, password: str) -> str:
             browser.close()
             return "User already logged in"
 
-#print(visualfabriq_login("nttdata","",""))
+print(visualfabriq_login("nttdata","dsferlaz@emeal.nttdata.com","Missingno@712001"))

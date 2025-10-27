@@ -1,449 +1,449 @@
 {
-    "last_updated": "2025-10-21T18:12:14",
+    "last_updated": "2025-10-27T17:59:28",
     "pipelines": [
         {
-            "pipeline_name": "AAAAAAAccruals - Refresh Accruals within Reporting",
+            "pipeline_name": "Accruals - Refresh Accruals within Reporting",
             "pipeline_id": "a982d60e-f91b-440f-ab62-93b8928f405e",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Claim Inbound Import & Process",
             "pipeline_id": "02363d5f-fe6e-4eab-8c7e-bb5a6c8b6a5c",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
-            "pipeline_name": "CCCCCClaims- Credit note generation",
+            "pipeline_name": "Claims- Credit note generation",
             "pipeline_id": "8c05977e-74db-4a27-b2e4-841cb3b1aa5d",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Claims - Reporting Update",
             "pipeline_id": "c2afaa40-dc15-4efa-981f-be518558070c",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Demand - Delivered Forecast - Load forecast from delivered baseline",
             "pipeline_id": "e8ea7b3f-2a2f-416d-bcef-08cf8c5756e8",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Demand - Export forecast",
             "pipeline_id": "edc881a0-83dd-415f-a038-4192f039a807",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Demand - Longterm - Load baseline from delivered file",
             "pipeline_id": "51ac0228-8ec7-48f0-b222-7d1ff3ca98db",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Demand - PLC Integration - Refresh Demand with PLC",
             "pipeline_id": "0df8894a-53c1-4c43-a638-2d167d3f1515",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Demand - Refresh module Reporting",
             "pipeline_id": "e5d3400b-fc62-4ce4-a645-af2d552025a8",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Demand - Refresh module Reporting (1)",
             "pipeline_id": "55a00d1e-470b-4071-b706-3a45052f30bd",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Demand - Refresh Pareto",
             "pipeline_id": "05b5212f-bdab-4a0c-8f72-05fcc53631fe",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Demand - Refresh Risk Update within module Demand",
             "pipeline_id": "c2f775f5-1f64-4f5d-b3f8-a0870474e1d8",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Demand - Refresh Trade Promotion within module Demand",
             "pipeline_id": "38f592f3-ebde-407b-b177-4f35926242d4",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Demand - Refresh Trade Promotion within module Demand - Revenue Plan V2",
             "pipeline_id": "16d85a35-c5a3-4ecd-8794-406c40b50db6",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Export - Report",
             "pipeline_id": "5676b512-785e-4efb-a8d0-2dd7039fa0fc",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Export - Report (2)",
             "pipeline_id": "3b56a986-5494-4119-98bf-335a79780dad",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Export - Report Michele pie chart",
             "pipeline_id": "e1ec2ce0-7ed7-4514-be00-f43fe58a47ff",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Import Baseline",
             "pipeline_id": "0e8d29c2-854f-4e9f-9e60-de246ced530c",
             "schedule": "0 0 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Import Product Hierarchy",
             "pipeline_id": "c2e061ca-4f6a-44da-8968-9af3623b71cd",
             "schedule": "0 0 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Import SAP Custmer Masterdata",
             "pipeline_id": "388f92e6-8764-430b-ad83-127a09d3ad16",
             "schedule": "0 0 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Import SAP Pricing Static Tables",
             "pipeline_id": "7d412fd6-4a34-449d-8188-b0e66adbe7d1",
             "schedule": "0 0 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Import SAP Pricing Tables",
             "pipeline_id": "974d8732-f3c7-44de-a4c6-18f37b9a7610",
             "schedule": "0 0 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Import SAP Product Masterdata",
             "pipeline_id": "bd5950db-4099-4235-aaa6-78f212641d23",
             "schedule": "0 0 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Import Shipments - Ex-factory Sales Data",
             "pipeline_id": "b9702bdc-9b6e-42d6-9109-32c193b7ca68",
             "schedule": "0 0 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Load delivered baseline into Demand forecast",
             "pipeline_id": "d0154dc6-0f7b-4fb2-be2f-1d317dc49546",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Load - Nielsen CreCha & SFF format",
             "pipeline_id": "d9001d78-0ae0-4961-bf65-f0002831aff6",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Master data: Import - Process - SAP Product and BOM",
             "pipeline_id": "780d7619-de74-4326-b8c2-f52c423123b0",
             "schedule": "0 0 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Master data - Process - All SAP Masterdata",
             "pipeline_id": "a18571f4-5215-4104-ba47-87a66085df6c",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Master data - Process - SAP Pricing",
             "pipeline_id": "1e945180-9eec-4666-86c3-ebf061ee8dfd",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Master data - RSP2 - Staging - Processing",
             "pipeline_id": "9d90c931-7077-4a43-bdc2-55b97a7c6547",
             "schedule": "0 0 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Master data - RSP - Staging - Processing",
             "pipeline_id": "5c81fe02-a2e1-4730-a782-e86f4feefb7c",
             "schedule": "0 0 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "PLC - Load switchfile",
             "pipeline_id": "e058ed1a-4b70-4533-9005-8d3b23529821",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "PLC - Load switchfile (1)",
             "pipeline_id": "1cb8c163-ca37-464b-901b-13bb1cef2f6a",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Process Baselines",
             "pipeline_id": "81645cd4-2f56-4448-86e3-4edffca17002",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Process - Masterdata - Complete refresh",
             "pipeline_id": "33b13b78-bc21-4a63-93a0-d8d714440194",
             "schedule": "0 3 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Process - Non-SAP (Customers, products and BOM) + Check UOM Factor",
             "pipeline_id": "11083da9-72c9-4c2a-aa0e-89bf157451a5",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Re-execute test",
             "pipeline_id": "57561104-508a-4387-ab28-35b76ee41d30",
             "schedule": "00 1 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Reporting - Export Report",
             "pipeline_id": "ae5c8694-bc39-4d87-9ffb-5b1c4e31d647",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "RGM - Refresh Dimensions",
             "pipeline_id": "1febb427-ada0-4394-875f-3fc784b9fc3b",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Sample Import Exchange Rate File",
             "pipeline_id": "fd62e301-bb5b-4a3a-add1-a17c45197b24",
             "schedule": "20 0 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "SFTP test Bearer",
             "pipeline_id": "00f198b9-b354-427e-a81b-59843f538fa4",
             "schedule": "0 0 ? * * * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "test",
             "pipeline_id": "41461f23-1999-4767-b34a-681e7536d4d1",
             "schedule": "1 1 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "test bearers",
             "pipeline_id": "bff66d2d-d69b-4267-98f7-1b697a86916f",
             "schedule": "* * ? * * * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Contract Accrual processing Job",
             "pipeline_id": "a618bd16-2558-49e8-8df8-309b5c0a6c53",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Contract - Authorization update",
             "pipeline_id": "0ac89dcf-b633-47a9-ac48-96829adb049b",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotion - Accruals processing",
             "pipeline_id": "80049bfe-35b5-4b19-8c4c-d971cbbb218c",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotion - Accruals processing (1)",
             "pipeline_id": "7276112f-0364-4fd5-b5a0-294511e95361",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotion - On invoice ( Direct) Response Message",
             "pipeline_id": "3423c816-63ef-447a-8795-eb72a1683b3f",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Actualize with Sell-in",
             "pipeline_id": "a5b233cc-5a0f-4163-a8b0-6faea7d255e2",
-            "schedule": "0 04 * * ? * (GMT+2)",
-            "status": false
+            "schedule": "0 04 * * ? * (GMT+1)",
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Complete refresh",
             "pipeline_id": "e5ace06d-0ade-4a7f-b1cd-5d96b75827cf",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Complete refresh (1)",
             "pipeline_id": "3c1dea61-117c-4e66-8884-aa98caba6c53",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Complete refresh (2)",
             "pipeline_id": "ee55daa6-2b26-4eaf-9173-cc1be46d0dac",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Export Demand Incrementals",
             "pipeline_id": "9c49e1cc-5f43-4cec-ad80-59637faa7637",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Loading Historical Promotions",
             "pipeline_id": "3b364c94-ffb8-482f-b839-74392325ca7e",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Process all",
             "pipeline_id": "7331f0e2-c25f-4ba2-a071-41144bd112d7",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Refresh module Reporting",
             "pipeline_id": "665be11b-2812-4015-a662-ea2d226b9dd2",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Update Promotion products based on latest Life Cycle",
             "pipeline_id": "2e0fc2aa-4a66-48ba-b840-ef26d6f31782",
-            "schedule": "00 00 * * ? * (GMT+2)",
-            "status": false
+            "schedule": "00 00 * * ? * (GMT+1)",
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Update Promotion products based on latest Life Cycle (1)",
             "pipeline_id": "fd7b97d8-df51-4e93-9193-41e7046398d2",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Update Promotion products based on latest Life Cycle (2)",
             "pipeline_id": "d9f68538-f37a-47cc-a2e7-a193307c7c9a",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Update Promotion products based on latest Life Cycle (3)",
             "pipeline_id": "ef231cff-07cb-4925-8a84-a09fe9dd49df",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trade Promotions - Update Promotion products based on latest Life Cycle (4)",
             "pipeline_id": "400daeaa-6154-4c44-afcf-f052cbf5ffc4",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trial EPOS Import Pipeline",
             "pipeline_id": "7197d065-f012-4ead-bdc5-1a4897ad2654",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "Trial Import Pipeline",
             "pipeline_id": "fe247cda-897c-4d08-bdb8-be6f9f56ac3c",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "TTR - Commercial Pricing refresh",
             "pipeline_id": "5297e440-d461-4b85-98cc-e899d632909d",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "TTR - Contract Adjustments Status Update",
             "pipeline_id": "de427f74-7adf-417d-ab3a-79e3731a1a55",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": true
+            "status": "Enabled"
         },
         {
             "pipeline_name": "TTR - Contract Hierarchy refresh",
             "pipeline_id": "f7bd0dbc-7d22-4339-848d-c4da18cb4d32",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "TTR - Contracts export",
             "pipeline_id": "80e139d2-e012-4b45-8a8a-3f231d5003d2",
-            "schedule": "25 05 * * ? * (GMT+2)",
-            "status": false
+            "schedule": "25 05 * * ? * (GMT+1)",
+            "status": "Disabled"
         },
         {
             "pipeline_name": "TTR - Contracts Status update",
             "pipeline_id": "bac8bfb5-255e-4f95-a7f0-fa3b545cf28a",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": true
+            "status": "Enabled"
         },
         {
             "pipeline_name": "TTR - Export NIV",
             "pipeline_id": "659a8b9f-93a0-44f5-b5ab-424304c70c1d",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "TTR - Export Revenue plan",
             "pipeline_id": "1e5c3ee6-7d97-4031-9c6f-747e3851cca1",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "TTR - Pricing master export",
             "pipeline_id": "133486ce-1cec-4f6a-a979-e93d82f55a77",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "TTR - Refresh pricing",
             "pipeline_id": "eae93580-4342-40b6-abf1-bcb968a6bee7",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "TTR- Update platform pricing from TTR",
             "pipeline_id": "4af8353e-f1c3-471b-b629-d2fba6070f30",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         },
         {
             "pipeline_name": "TTR - Update Revenue Plan",
             "pipeline_id": "3c07ee76-755b-4014-8aa6-20455431d06f",
             "schedule": "0 12 * * ? * (GMT)",
-            "status": false
+            "status": "Disabled"
         }
     ]
 }
