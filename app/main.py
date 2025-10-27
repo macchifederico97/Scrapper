@@ -2,12 +2,13 @@ from datetime import datetime, timedelta
 import time
 import json
 from flask import Flask, request, jsonify
-from core import login_and_cache_state, rerun_pipeline, runtime_pipeline, log_pipeline, fullExtract_pipeline, extract_userStatus, status_pipeline, getID_pipeline, setFileMappingCore
+from core import login_and_cache_state, rerun_pipeline, runtime_pipeline, log_pipeline, fullExtract_pipeline, extract_userStatus, status_pipeline, getID_pipeline
 from legacy.WebService.ConfigParser import parse_config
 from filelock import FileLock
 
 # Config: Log-In Refresh Parameters
-LOCK_FILE = "state.lock"
+LOCK_FILE_LOGIN = "login\.lock"
+LOCK_FILE_PIPELINE_ID = "pipeline_id.lock"
 REFRESH_INTERVAL = 3600  #1 hour
 last_login_time = 0
 
@@ -30,7 +31,7 @@ def save_state(state):  #Updating the sharedState.json file with the state input
 def ensure_valid_login():   #Handle Login Check and Refresh
     state = load_state()
     if time.time() - state["last_login_time"] > REFRESH_INTERVAL:  #Checking if last login after refresh_interval
-        lock = FileLock(LOCK_FILE)
+        lock = FileLock(LOCK_FILE_LOGIN)
         print("Accessing state.lock...")
         with lock.acquire():
             # Re-Checking timings inside lock to avoid race condition
@@ -43,21 +44,25 @@ def ensure_valid_login():   #Handle Login Check and Refresh
             else:
                 print("Login already updated")
 
-def setFileMapping(bifrost_instance: str, filterEnabled: bool):    #Update the pipeline mapping file if empty or older than 24 hours
+def ensure_valid_pipeline_id(bifrost_instance: str, filterEnabled: bool = False):    #Update the pipeline mapping file if empty or older than 24 hours
+    # TODO TESTARE FILE LOCK
+    lock = FileLock(LOCK_FILE_PIPELINE_ID)
     if bifrost_instance == "" or bifrost_instance is None:
         with open(f"client/bifrost_instance.json", "r", encoding="utf-8") as f:
                 instance = json.load(f)
         for bifrost_instance_json in instance:
             name_instance = bifrost_instance_json.get("bifrost_instance")
             with open(f"client/{name_instance}/pipeline.json", "r", encoding="utf-8") as f:
-                    pipelines = json.load(f)
-            #if len(pipelines["pipelines"]) == 0 and (datetime.now() - pipelines["last_updated"]) < timedelta(hours=24):
-            setFileMappingCore(name_instance, filterEnabled)
+                pipelines = json.load(f)
+            if len(pipelines["pipelines"]) == 0 or (datetime.now() - datetime.strptime(pipelines["last_updated"], "%Y-%m-%dT%H:%M:%S")) > timedelta(minutes=1):  #CONTROLLO SE AGGIORNARE IL FILE CON LE PIPELINE ID
+                with lock.acquire(): #FILE LOCK
+                    getID_pipeline(name_instance, filterEnabled)
     else:
         with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
-                pipelines = json.load(f)
-        if len(pipelines["pipelines"]) == 0 and (datetime.now() - pipelines["last_updated"]) < timedelta(hours=24):
-            setFileMappingCore(bifrost_instance, filterEnabled)
+            pipelines = json.load(f)
+        if len(pipelines["pipelines"]) == 0 or (datetime.now() - datetime.strptime(pipelines["last_updated"], "%Y-%m-%dT%H:%M:%S")) > timedelta(minutes=1):
+            with lock.acquire():    #FILE LOCK
+                getID_pipeline(bifrost_instance, filterEnabled)
 
 
 def create_app():
@@ -65,9 +70,10 @@ def create_app():
 
     @app.before_request
     def check_login_before_request():   #Before every API request, check if login state is updated
-        print("Checking login state before request..." )
+        print("Checking login state and pipeline_id before request..." )
         ensure_valid_login()
-        setFileMapping(None, False)
+        ensure_valid_pipeline_id("nttdata", False)    #TODO DA IMPLEMENTARE PRIMA DI OGNI CHIAMATA CON BIFROST, IN MODO DA CHIAMARLO CON L'ISTANZA DELLA RICHIESTA API
+        print("Login State and Pipeline_id are currently updated")
 
     @app.get("/healthz")
     def healthz():
@@ -188,6 +194,7 @@ def create_app():
 # Instance for gunicorn "app.main:app"
 app = create_app()
 ensure_valid_login() #Manage login after creating the app
+ensure_valid_pipeline_id("", True)  #Manage pipeline_id db (#PIPELINE_GETID #DEBUGGING)
 print("Login completed, calls can be made now")
 
 #COMMENT FOR DANIELE TEST COMMIT

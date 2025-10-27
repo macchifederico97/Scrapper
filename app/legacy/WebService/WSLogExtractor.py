@@ -34,15 +34,19 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
 
         if flIdFound:
             # AUTO SEARCH TRAMITE PIPELINE_ID NEL DATABASE
+            ''' #NON HO BISOGNO DELLA GENERAL SEARCH UNA VOLTA TROVATO IL PIPELINE ID
             page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
             page.wait_for_load_state()
             page.wait_for_timeout(6000)
+            '''
 
             # Filter pipeline
             page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{pipeline_id}/history")
             page.wait_for_load_state()
+            page.wait_for_timeout(1000)
         else:
            # MANUAL SEARCH, PIPELINE_ID NOT FOUND NEL DATABASE
+            print(f"Pipeline {pipeline_filter} not found, doing manual search")
             page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
             page.wait_for_load_state()
             page.wait_for_timeout(6000)
@@ -119,4 +123,4 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
         return outputList
         #return save_path, download.suggested_filename
 
-#print(log_extractor("Demand - Refresh Trade Promotion within module Demand - Revenue Plan V2", "nttdata")) #TEST & DEBUGGING
+print(log_extractor("Demand - Export forecast", "nttdata", False)) #TEST & DEBUGGING

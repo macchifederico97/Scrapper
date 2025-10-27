@@ -2,7 +2,7 @@
     "last_updated": "2025-10-21T18:12:14",
     "pipelines": [
         {
-            "pipeline_name": "Accruals - Refresh Accruals within Reporting",
+            "pipeline_name": "AAAAAAAccruals - Refresh Accruals within Reporting",
             "pipeline_id": "a982d60e-f91b-440f-ab62-93b8928f405e",
             "schedule": "0 12 * * ? * (GMT)",
             "status": false
@@ -14,7 +14,7 @@
             "status": false
         },
         {
-            "pipeline_name": "Claims- Credit note generation",
+            "pipeline_name": "CCCCCClaims- Credit note generation",
             "pipeline_id": "8c05977e-74db-4a27-b2e4-841cb3b1aa5d",
             "schedule": "0 12 * * ? * (GMT)",
             "status": false

@@ -1,4 +1,5 @@
 import json
+import sys
 #from datetime import datetime
 
 def getData(file_path: str):    #TODO LEGGERE DIRETTAMENTE IL FILE DA CLIENT, SENZA RICHIEDERE PATH, SOLTANTO CON BIFROST_INSTANCE
@@ -10,6 +11,7 @@ def getData(file_path: str):    #TODO LEGGERE DIRETTAMENTE IL FILE DA CLIENT, SE
         return {"last_updated": None, "pipelines": []}
 
 def smartAppendData(file_path: str, new_data: dict):
+    sys.path.insert(0, "legacy/WebService")
     """
     Aggiorna o aggiunge pipeline nel file JSON esistente,
     aggiornando anche il campo 'last_updated' con quello del nuovo file.
@@ -45,7 +47,9 @@ def smartAppendData(file_path: str, new_data: dict):
     data["pipelines"] = existing_pipelines
 
     # 6. Salva tutto
+
     with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
+    sys.path.pop(0)
 
     print(f"Dati aggiornati. Ultimo aggiornamento: {data['last_updated']}")
