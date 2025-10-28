@@ -5,8 +5,11 @@ from playwright.sync_api import sync_playwright
 #from datetime import datetime
 from pathlib import Path
 #import json
+import sys
 
+sys.path.insert(0, "legacy/WebService")
 from pipelineFileFunctions import smartAppendData
+sys.path.pop(0)
 
 
 #FUNCTION THAT RETURNS THE NAME AND ID OF ALL PIPELINES IN THE SYSTEM
@@ -135,13 +138,14 @@ def getID_pipelines(bifrost_instance: str, filterEnabled: bool, headlessPar: boo
                 print(f"Progress: {count}/{countPipelines}")
                 #print(count)
                 pipelineName, pipelineID, schedule, status = pipelineName.split(" -- ", 3)
-                pipeDict = {"pipeline_name": pipelineName, "pipeline_id": pipelineID, "schedule": schedule, "status": True if status == "Enabled" else False}
+                pipeDict = {"pipeline_name": pipelineName, "pipeline_id": pipelineID, "schedule": schedule, "status": status}
                 outputList.append(pipeDict)     #Creation of the dict with pipeline information and appended to the output list
         browser.close()
 
         # Save output to JSON file
 
         # Complete path
+
         cartella = Path(f"client/{bifrost_instance}")
         cartella.mkdir(parents=True, exist_ok=True)
         file_path = cartella / "pipeline.json"

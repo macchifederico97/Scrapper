@@ -34,15 +34,14 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
 
         if flIdFound:
             # AUTO SEARCH TRAMITE PIPELINE_ID NEL DATABASE
-            page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
-            page.wait_for_load_state()
-            page.wait_for_timeout(6000)
 
             # Filter pipeline
             page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{pipeline_id}/history")
             page.wait_for_load_state()
+            page.wait_for_timeout(1000) #DEBUGGING
         else:
            # MANUAL SEARCH, PIPELINE_ID NOT FOUND NEL DATABASE
+            print(f"Pipeline {pipeline_filter} not found, doing manual search")
             page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
             page.wait_for_load_state()
             page.wait_for_timeout(6000)
@@ -73,37 +72,60 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
                            """)
                 page.wait_for_timeout(2000)
 
+        #
+
         page.locator(".bifrostcss-bnFVuH").nth(0).click()  #CLICK ON THE LAST EXECUTION
         page.wait_for_timeout(500)
 
-        #CLICK ON THE DOWNLOAD LOG BUTTON
-        if page.locator(".bifrostcss-hVuvHH").count() == 0: #HANDLE THE CASE WHERE I HAVE NO LOG FOR THE PIPELINE
-            print("No log found for pipeline: " + str(pipeline_filter)) #DEBUGGING
-            return "LogNotFound"
-
         outputList = []
 
-        for i in range(page.locator(".bifrostcss-hVuvHH").count()): #TO HANDLE THE CASE OF WHEN AN EXECUTION HAS MORE THAN ONE LOG
-            with page.expect_download() as download_info:
-                page.locator(".bifrostcss-hVuvHH").nth(i).click()   #CLICK THE DOWNLOAD LOG BUTTON
-                print("Downloading log nr: " + str(i + 1)) #DEBUGGING
 
-                download = download_info.value
-                save_path = os.path.join(download_dir, download.suggested_filename)
+        elements = page.locator(".bifrostcss-xqfsM")
+        if elements.count() == 0: #HANDLE THE CASE WHERE I HAVE NO LOG MESSAGE GENERATED FOR THE PIPELINE (FORSE RIDONDANTE?)
+            return "LogNotFound"
+        for i in range (elements.count()):
+            element = elements.nth(i)
+            inner_elements = element.locator(".bifrostcss-hVuvHH")
 
-                download.save_as(save_path)
-                print(f"Download nr.{i + 1} finished")  #DEBUGGING
+            if inner_elements.count()>0:    #HO TROVATO IL TASTO DI DOWNLOAD DEL LOG, SCARICO IL FILE E LO ANALIZZO
+                with page.expect_download() as download_info:
+                    page.locator(".bifrostcss-hVuvHH").nth(0).click()   #CLICK THE DOWNLOAD LOG BUTTON (JUST ONE DOWNLOAD BUTTON SHOULD BE FOUND IN THIS CASE)
+                    print("Downloading log nr: " + str(i + 1))  # DEBUGGING
+                    download = download_info.value
+                    save_path = os.path.join(download_dir, download.suggested_filename)
 
-                #OUTPUT MANAGEMENT
-                with open(save_path, newline="", encoding="utf-8") as file:
-                    iter=0
-                    reader = csv.DictReader(file)
-                    fileDict = {}   #SAVE THE CONTENT OF THE DOWNLOADED LOG IN A DICT
-                    for row in reader:
-                        iter+=1
-                        fileDict[row["timestamp"]+str(iter % 100).zfill(3)] = row["message"]
-                    outputList.append(fileDict) #INSERT THE DICT INTO THE OUTPUT LIST
+                    download.save_as(save_path)
+                    print(f"Download nr.{i + 1} finished")  # DEBUGGING
 
+                    # OUTPUT MANAGEMENT
+                    with open(save_path, newline="", encoding="utf-8") as file:
+                        iter = 0
+                        reader = csv.DictReader(file)
+                        fileDict = {}  # SAVE THE CONTENT OF THE DOWNLOADED LOG IN A DICT
+                        for row in reader:
+                            iter += 1
+                            fileDict[row["timestamp"] + str(iter % 100).zfill(3)] = row["message"]
+                        outputList.append(fileDict)  # INSERT THE DICT INTO THE OUTPUT LIST
+            else:   #NON HO TROVATO IL TASTO DI DOWNLOAD LOG, SALVO IL TESTO MOSTRATO NEL CODICE HTML
+                inner_log_text = page.locator(".bifrostcss-ldpQIE").nth(0).inner_text() #OTTENGO IL TESTO DEL LOG MOSTRATO SU SCHERMO ALL'UTENTE
+                iter = 0
+                fileDict = {}
+                timestamp = ""
+                message = ""
+                for row in inner_log_text.splitlines():
+                    if row[0].isdigit():
+                        if timestamp != "" and message != "":   #AGGIUNGO UN NUOVO MESSAGGIO, PERCHE HO TROVATO UN NUOVO TIMESTAMP
+                            iter += 1
+                            fileDict[timestamp + str(iter % 100).zfill(3)] = message
+                        parts = row.split(" ", 2)
+                        timestamp = " ".join(parts[:2])  # Tutto fino al secondo spazio
+                        message = parts[2]  # Tutto dopo il secondo spazio
+                    else:   #NON HO TROVATO UN NUOVO TIMESTAMP, AGGIUNGO LA RIGA CORRENTE AL MESSAGGIO
+                        message += (" " + row)
+                if timestamp != "" and message != "":  # AGGIUNGO UN NUOVO MESSAGGIO, PERCHE HO TROVATO UN NUOVO TIMESTAMP
+                    iter += 1
+                    fileDict[timestamp + str(iter % 100).zfill(3)] = message
+                outputList.append(fileDict)  # INSERT THE DICT INTO THE OUTPUT LIST
 
         page.wait_for_timeout(3000)
         # Cleanup browser
@@ -119,4 +141,5 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
         return outputList
         #return save_path, download.suggested_filename
 
-#print(log_extractor("Demand - Refresh Trade Promotion within module Demand - Revenue Plan V2", "nttdata")) #TEST & DEBUGGING
+print(log_extractor("Sample Import Exchange Rate File", "nttdata", False)) #TEST & DEBUGGING
+#print(log_extractor("Import SAP Pricing Tables", "nttdata", False)) #TEST & DEBUGGING

@@ -1,4 +1,10 @@
+import sys
+sys.path.insert(0, "legacy/WebService")
+from InstanceChange import instance_change
+sys.path.pop(0)
+
 from playwright.sync_api import sync_playwright
+
 from InstanceChange import instance_change
 
 

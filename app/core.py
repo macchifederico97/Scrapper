@@ -7,11 +7,11 @@ from legacy.WebService.WSstatusScraper import scrape_pipeline_status
 from legacy.WebService.WSLogExtractor import log_extractor
 from legacy.WebService.WSFullExtractor import full_extractor
 from legacy.WebService.WSUserStatus import scrape_user_list
-from legacy.WebService.WSPipelineGetID import getID_pipelines
 from legacy.WebService.WSPipelineFile import setFileMappingPy
+from legacy.WebService.WSPipelineGetID import getID_pipelines
 
 STATE_PATH = os.getenv("STATE_PATH", "legacy/WebService/state.json")
-HEADLESS = os.getenv("HEADLESS", "true").lower() == "true"
+HEADLESS = os.getenv("HEADLESS", "true").lower() == "false" #TOCHANGE TRUE #DEBUGGGING
 
 '''
 def _new_context(p):
@@ -41,9 +41,10 @@ def runtime_pipeline(pipeline_id: str, bifrost_instance: str) -> dict:
     res = scrape_pipeline_last_run(pipeline_id, bifrost_instance, HEADLESS)
     return res
 
+
 #Pipeline ID function
-def getID_pipeline(bifrost_instance: str, filterEnabled: bool) -> dict:
-    print("Starting getID_pipeline function")
+def getID_pipeline(bifrost_instance: str, filterEnabled: bool = False) -> dict:
+    print(f"Updating pipeline id for instance: {bifrost_instance}")
     res = getID_pipelines(bifrost_instance, filterEnabled, HEADLESS)
     return res
 
@@ -65,11 +66,13 @@ def fullExtract_pipeline(status_filter: str, bifrost_instance: str) -> dict:
     res = full_extractor(bifrost_instance, status_filter, HEADLESS)
     return res
 
+'''
 #Pipeline full extract function
 def setFileMappingCore(bifrost_instance: str, filterEnabled) -> dict:
     print("Starting fullExtract_pipeline function")
     res = setFileMappingPy(bifrost_instance, filterEnabled, HEADLESS)
     return res
+'''
 
 #Pipeline user status function
 def extract_userStatus(bifrost_instance: str):
