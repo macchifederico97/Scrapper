@@ -30,7 +30,7 @@ def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool
         if page.locator(".bifrostcss-bnFVuH").count() == 0:     #Handling the case where the pipeline has never been runned
             page.locator(".bifrostcss-fIrYkC").click()  # Pipeline-history page close
             page.wait_for_timeout(1000)
-            return "", "", "", ""
+            return "", "", "", "", ""
 
         page.locator(".bifrostcss-bnFVuH").nth(0).click()  # last execution
         page.wait_for_timeout(500)
@@ -69,8 +69,15 @@ def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool
         # Lettura dal file
         with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
             pipelines = json.load(f)
-        print(f"Loaded {len(pipelines)} pipelines from JSON file.")
+        filter_pipelines = filter_enabled.lower() == "true" if filter_enabled else False 
+            
         for pipeline in pipelines["pipelines"]:
+            print(f"Evaluating pipeline: {pipeline['pipeline_name']} with status {pipeline['status']}")
+            print("---")
+            if(filter_pipelines and pipeline["status"] != "Enabled"):
+                continue
+            else:
+                print(f"Extracting info for pipeline: {pipeline['pipeline_name']}")
                 startTime, finishTime, duration_minutes, schedule, status = getPipelineInformations(pipeline["pipeline_name"], pipeline["pipeline_id"])
                 pipeDict = {"pipeline_name": pipeline["pipeline_name"], "status": status, "start_time": startTime,
                         "finish_time": finishTime, "duration_minutes": duration_minutes, "schedule": schedule}
