@@ -14,11 +14,6 @@ def pipeline_rerun(pipeline_filter: str, bifrost_instance: str, headlessPar: boo
         context = browser.new_context(storage_state="state.json", device_scale_factor=1)
         page = context.new_page()
         page.set_viewport_size({"width": 1600, "height": 1200})
-
-
-        #get import folder ID
-        # Filter pipeline
-        #page.wait_for_timeout(3000)
         
         page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
         page.wait_for_timeout(5000)
@@ -30,24 +25,41 @@ def pipeline_rerun(pipeline_filter: str, bifrost_instance: str, headlessPar: boo
         page.locator(".bifrostcss-fFaJCf").nth(7).click()  #Opening the pipeline details page
         
         page.wait_for_timeout(5000)        #check if data staging is present
-        if page.locator('text=Staging').count()>0:
-            page.locator('text="Data Staging"').wait_for(state="visible")
-            page.click('text="Data Staging"')        
+        staging_elements = page.locator('text=Data Staging')
+
+        count = staging_elements.count()
+        results = []
+        for i in range(count):
+            # Clicca sull'elemento i-esimo
+            staging_elements.nth(i).click()       
             page.locator('text="Import Folder"').wait_for(state="visible")
             path = page.locator(".bifrostcss-cGCXgx").nth(3).input_value()
+            format = page.locator(".bifrostcss-iFEVQl").nth(2).text_content()
+            print(f"Import Folder Path: {path}, Format: {format}")
+            results.append({"path": path, "format": format})
 
-            path = "test/test2"   #DEBUGGING
+            if i < count - 1:
+                page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
+                page.wait_for_timeout(5000)
+                page.locator('text="Name"').wait_for(state="visible")
+                page.wait_for_load_state()
+                page.get_by_placeholder("Search by name...").type(pipeline_filter)
+                page.wait_for_timeout(3000)
+                page.locator(".bifrostcss-fFaJCf").nth(7).click()  #Opening the pipeline details page
+
+        for result in results:
             # Go to the page
-            page.goto(f"https://app.eu.visualfabriq.com/bifrost/nttdata/files/vf-import-processed/{path}")
+            page.goto(f"https://app.eu.visualfabriq.com/bifrost/nttdata/files/vf-import-processed/{result['path']}")
             page.locator('text="vf-import-processed"').wait_for(state="visible")
             page.wait_for_timeout(3000)
             if page.locator('.bifrostcss-ieEbAG').is_visible():
                 print("Folder is empty.")
             else:
                 print("Folder contains files.")
+                page.get_by_placeholder("Search").nth(1).fill(result['format'])
 
                 # Move files to import-queue
-                page.locator(".bifrostcss-edwLhL").nth(1).click() #flag
+                page.locator(".bifrostcss-edwLhL").nth(0).click() #flag
                 page.wait_for_timeout(1000)
                 page.click('text="Move file(s)"')
                 page.wait_for_timeout(3000)
@@ -58,7 +70,7 @@ def pipeline_rerun(pipeline_filter: str, bifrost_instance: str, headlessPar: boo
 
                 page.locator('text="Moving files to:"').wait_for(state="visible")
                 # Cycle on each folder
-                for folder in path.split("/"):
+                for folder in result['path'].split("/"):
                     page.get_by_placeholder("Search").nth(1).fill(folder)
                     page.wait_for_timeout(3000)
                     page.locator(".bifrostcss-WnhIC").last.click()
