@@ -3,7 +3,7 @@ from playwright.sync_api import sync_playwright
 from legacy.WebService.WSPipelineRerun import pipeline_rerun
 from legacy.WebService.WSManageLogin import visualfabriq_login
 from legacy.WebService.WSPipelineRuntime import scrape_pipeline_last_run
-from legacy.WebService.WSstatusScraper import scrape_pipeline_status
+from legacy.WebService.WSstatusScraperNewVer import scrape_pipeline_status
 from legacy.WebService.WSLogExtractor import log_extractor
 from legacy.WebService.WSFullExtractor import full_extractor
 from legacy.WebService.WSUserStatus import scrape_user_list
@@ -49,9 +49,10 @@ def getID_pipeline(bifrost_instance: str, filterEnabled: bool = False) -> dict:
     return res
 
 #Pipeline status function
+#TODO TO CHANGE CON NEW VERSION
 def status_pipeline(status_filter: str, bifrost_instance: str) -> dict:
     print("Starting status_pipeline function")
-    res = scrape_pipeline_status(bifrost_instance, status_filter, HEADLESS)
+    res = scrape_pipeline_status(bifrost_instance, bool(status_filter), HEADLESS)
     return res
 
 #Pipeline last log download function
@@ -73,6 +74,8 @@ def setFileMappingCore(bifrost_instance: str, filterEnabled) -> dict:
     res = setFileMappingPy(bifrost_instance, filterEnabled, HEADLESS)
     return res
 '''
+
+#Pipeline update id function
 
 #Pipeline user status function
 def extract_userStatus(bifrost_instance: str):

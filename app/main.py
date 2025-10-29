@@ -171,6 +171,21 @@ def create_app():
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
+    # Call to function: pipeline_update_Id, Manual Pipeline Id Update
+    @app.get("/api/pipelineUpdateId")
+    def pipeline_update_id():
+        print("pipeline_update_id: Starting")
+        bifrost_instance = request.args.get("bifrost_instance")
+        status_filter = request.args.get("status_filter")
+        if not status_filter or not bifrost_instance:
+            return jsonify({"error": "status_filter and bifrost_instance required"}), 400
+        try:
+            res = getID_pipeline(bifrost_instance, bool(status_filter)) #TODO DA CONTROLLARE
+            print("pipeline_update_id: Completed")
+            return jsonify(res)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
     # Call to function: userStatus_extract
     @app.get("/api/userStatus")
     def userStatus_extract():
@@ -196,5 +211,3 @@ app = create_app()
 ensure_valid_login() #Manage login after creating the app
 ensure_valid_pipeline_id("", True)  #Manage pipeline_id db (#PIPELINE_GETID #DEBUGGING)
 print("Login completed, calls can be made now")
-
-#COMMENT FOR DANIELE TEST COMMIT
