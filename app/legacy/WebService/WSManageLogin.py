@@ -13,8 +13,7 @@ def visualfabriq_login(organisation_id: str, mail: str, password: str) -> str:
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=HEADLESS  # headless=False = show the browser
-            ,args=["--no-sandbox", "--ignore-certificate-errors"],
-        executable_path="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe")
+            ,args=["--no-sandbox", "--ignore-certificate-errors"])
         if os.path.exists("state.json"):
             context = browser.new_context(storage_state="state.json")
         else:
