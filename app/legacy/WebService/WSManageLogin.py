@@ -13,7 +13,8 @@ def visualfabriq_login(organisation_id: str, mail: str, password: str) -> str:
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=HEADLESS  # headless=False = show the browser
-            ,args=["--no-sandbox", "--ignore-certificate-errors"])
+            ,args=["--no-sandbox", "--ignore-certificate-errors"],
+        executable_path="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe")
         if os.path.exists("state.json"):
             context = browser.new_context(storage_state="state.json")
         else:
@@ -53,4 +54,4 @@ def visualfabriq_login(organisation_id: str, mail: str, password: str) -> str:
             browser.close()
             return "User already logged in"
 
-print(visualfabriq_login("nttdata","dsferlaz@emeal.nttdata.com","Missingno@712001"))
+print(visualfabriq_login("nttdata","",""))
