@@ -53,4 +53,4 @@ def visualfabriq_login(organisation_id: str, mail: str, password: str) -> str:
             browser.close()
             return "User already logged in"
 
-print(visualfabriq_login("nttdata","dsferlaz@emeal.nttdata.com","Missingno@712001"))
+print(visualfabriq_login("nttdata","",""))
