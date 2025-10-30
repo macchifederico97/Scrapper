@@ -44,7 +44,7 @@ def ensure_valid_login():   #Handle Login Check and Refresh
             else:
                 print("Login already updated")
 
-def ensure_valid_pipeline_id(bifrost_instance: str, filterEnabled: bool = False):    #Update the pipeline mapping file if empty or older than 24 hours
+def ensure_valid_pipeline_id(bifrost_instance: str,  call_from : str, minutes_delta : int,  filterEnabled: bool = False):    #Update the pipeline mapping file if empty or older than 24 hours
     # TODO TESTARE FILE LOCK
     lock = FileLock(LOCK_FILE_PIPELINE_ID)
     if bifrost_instance == "" or bifrost_instance is None:
@@ -54,13 +54,17 @@ def ensure_valid_pipeline_id(bifrost_instance: str, filterEnabled: bool = False)
             name_instance = bifrost_instance_json.get("bifrost_instance")
             with open(f"client/{name_instance}/pipeline.json", "r", encoding="utf-8") as f:
                 pipelines = json.load(f)
-            if len(pipelines["pipelines"]) == 0 or (datetime.now() - datetime.strptime(pipelines["last_updated"], "%Y-%m-%dT%H:%M:%S")) > timedelta(minutes=1):  #CONTROLLO SE AGGIORNARE IL FILE CON LE PIPELINE ID
+            if call_from == "create_app" and datetime.strptime(pipelines["last_updated"], "%Y-%m-%dT%H:%M:%S").date() < datetime.now().date():
                 with lock.acquire(): #FILE LOCK
-                    getID_pipeline(name_instance, filterEnabled)
+                    getID_pipeline(name_instance, filterEnabled) 
+            else:
+                if len(pipelines["pipelines"]) == 0 or (datetime.now() - datetime.strptime(pipelines["last_updated"], "%Y-%m-%dT%H:%M:%S")) > timedelta(minutes_delta):  #CONTROLLO SE AGGIORNARE IL FILE CON LE PIPELINE ID
+                    with lock.acquire(): #FILE LOCK
+                        getID_pipeline(name_instance, filterEnabled) 
     else:
         with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
             pipelines = json.load(f)
-        if len(pipelines["pipelines"]) == 0 or (datetime.now() - datetime.strptime(pipelines["last_updated"], "%Y-%m-%dT%H:%M:%S")) > timedelta(minutes=1):
+        if len(pipelines["pipelines"]) == 0 or (datetime.now() - datetime.strptime(pipelines["last_updated"], "%Y-%m-%dT%H:%M:%S")) > timedelta(minutes_delta):
             with lock.acquire():    #FILE LOCK
                 getID_pipeline(bifrost_instance, filterEnabled)
 
@@ -72,7 +76,11 @@ def create_app():
     def check_login_before_request():   #Before every API request, check if login state is updated
         print("Checking login state and pipeline_id before request..." )
         ensure_valid_login()
-        ensure_valid_pipeline_id("nttdata", False)    #TODO DA IMPLEMENTARE PRIMA DI OGNI CHIAMATA CON BIFROST, IN MODO DA CHIAMARLO CON L'ISTANZA DELLA RICHIESTA API
+        bifrost_instance = request.args.get("bifrost_instance")
+        if bifrost_instance:
+            ensure_valid_pipeline_id(bifrost_instance, "before_request", 5, True)    
+        else:
+            ensure_valid_pipeline_id(None, "before_request", 5, True)    
         print("Login State and Pipeline_id are currently updated")
 
     @app.get("/healthz")
@@ -209,5 +217,5 @@ def create_app():
 # Instance for gunicorn "app.main:app"
 app = create_app()
 ensure_valid_login() #Manage login after creating the app
-ensure_valid_pipeline_id("", True)  #Manage pipeline_id db (#PIPELINE_GETID #DEBUGGING)
+ensure_valid_pipeline_id(None, "create_app", 1440, False)  #Refresh pipeline.json the first run of the day
 print("Login completed, calls can be made now")
