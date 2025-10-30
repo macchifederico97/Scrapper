@@ -30,7 +30,7 @@ def pipeline_rerun(pipeline_filter: str, bifrost_instance: str, headlessPar: boo
         
         #move files to import-queue
         for result in results:
-            moveFilesToImportQueue(page, result) 
+            moveFilesToImportQueue(page, result, bifrost_instance) 
         
         #click Run pipeline
         clickButtonRun(page, bifrost_instance, pipeline_filter)
@@ -89,8 +89,8 @@ def getPathStagingFile(page, pipeline_filter: str, bifrost_instance: str):
     return results
     
 
-def moveFilesToImportQueue(page, result):
-    page.goto(f"https://app.eu.visualfabriq.com/bifrost/nttdata/files/vf-import-processed/{result['path']}")
+def moveFilesToImportQueue(page, result, bifrost_instance):
+    page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/files/vf-import-processed/{result['path']}")
     page.locator('text="vf-import-processed"').wait_for(state="visible")
     page.wait_for_timeout(2000)
     if page.locator('.bifrostcss-ieEbAG').is_visible():
