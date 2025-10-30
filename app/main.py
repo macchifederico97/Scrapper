@@ -10,6 +10,7 @@ from filelock import FileLock
 LOCK_FILE_LOGIN = "login\.lock"
 LOCK_FILE_PIPELINE_ID = "pipeline_id.lock"
 REFRESH_INTERVAL = 3600  #1 hour
+REFRESH_INTERVAL_PIPELINE_ID = 5
 last_login_time = 0
 
 #Login function not exposed. Login managed via config.ini file
@@ -44,8 +45,7 @@ def ensure_valid_login():   #Handle Login Check and Refresh
             else:
                 print("Login already updated")
 
-def ensure_valid_pipeline_id(bifrost_instance: str,  call_from : str, minutes_delta : int,  filterEnabled: bool = False):    #Update the pipeline mapping file if empty or older than 24 hours
-    # TODO TESTARE FILE LOCK
+def ensure_valid_pipeline_id(bifrost_instance,  call_from : str, minutes_delta : int,  filterEnabled: bool = False):    #Update the pipeline mapping file if empty or older than 24 hours
     lock = FileLock(LOCK_FILE_PIPELINE_ID)
     if bifrost_instance == "" or bifrost_instance is None:
         with open(f"client/bifrost_instance.json", "r", encoding="utf-8") as f:
@@ -78,9 +78,9 @@ def create_app():
         ensure_valid_login()
         bifrost_instance = request.args.get("bifrost_instance")
         if bifrost_instance:
-            ensure_valid_pipeline_id(bifrost_instance, "before_request", 5, True)    
+            ensure_valid_pipeline_id(bifrost_instance, "before_request", REFRESH_INTERVAL_PIPELINE_ID, True)
         else:
-            ensure_valid_pipeline_id(None, "before_request", 5, True)    
+            ensure_valid_pipeline_id(None, "before_request", REFRESH_INTERVAL_PIPELINE_ID, True)
         print("Login State and Pipeline_id are currently updated")
 
     @app.get("/healthz")
@@ -164,7 +164,6 @@ def create_app():
             return jsonify({"error": str(e)}), 500
 
     # Call to function: pipeline_fullExtract
-    #TODO handle long task timeout, thread handling
     @app.get("/api/pipelineFullExtract")
     def pipeline_fullExtract():
         print("pipeline_fullExtract: Starting")
@@ -188,7 +187,10 @@ def create_app():
         if not status_filter or not bifrost_instance:
             return jsonify({"error": "status_filter and bifrost_instance required"}), 400
         try:
-            res = getID_pipeline(bifrost_instance, bool(status_filter)) #TODO DA CONTROLLARE
+            if status_filter.lower() == "true":
+                statusBool = True
+            else: statusBool = False
+            res = getID_pipeline(bifrost_instance, statusBool)
             print("pipeline_update_id: Completed")
             return jsonify(res)
         except Exception as e:

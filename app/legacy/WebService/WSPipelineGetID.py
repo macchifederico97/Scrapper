@@ -116,7 +116,9 @@ def getID_pipelines(bifrost_instance: str, filterEnabled: bool, headlessPar: boo
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=headlessPar
-            , args=["--no-sandbox", "--ignore-certificate-errors"])
+            , args=["--no-sandbox", "--ignore-certificate-errors"]
+            #, executable_path="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+        )
         context = browser.new_context(storage_state="state.json", device_scale_factor=1)
         page = context.new_page()
         page.set_viewport_size({"width": 1600, "height": 1200})

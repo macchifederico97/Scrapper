@@ -1,7 +1,7 @@
 from playwright.sync_api import sync_playwright
 
 
-
+#FUNZIONE ESPOSTA
 def pipeline_rerun(pipeline_filter: str, bifrost_instance: str, headlessPar: bool) -> str:
     """
     Clicks the execute button for the pipeline in input
@@ -49,6 +49,7 @@ def filterPipelineByName(page, pipeline_filter):
     page.get_by_placeholder("Search by name...").type(pipeline_filter)
     page.wait_for_timeout(3000)
 
+
 def clickButtonRun(page, bifrost_instance, pipeline_filter):  #Lightweight function of scrape_pipeline_last_run from WSPipelineRuntime
     page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
 
@@ -64,6 +65,7 @@ def clickButtonRun(page, bifrost_instance, pipeline_filter):  #Lightweight funct
     page.locator(".bifrostcss-fFaJCf").nth(4).click()   #click on the execute button
     page.wait_for_timeout(3000)
 
+#FUNZIONE ESPOSTA
 def getPathStagingFile(page, pipeline_filter: str, bifrost_instance: str):
     staging_elements = page.locator('text=Data Staging')
 
@@ -78,6 +80,8 @@ def getPathStagingFile(page, pipeline_filter: str, bifrost_instance: str):
         print(f"Import Folder Path: {path}, Format: {format}")
         results.append({"path": path, "format": format})
 
+        #page.locator(".bifrostcss-iRNFVM").nth(0).click()   #RITORNO ALLA PAGINA DEGLI STEP DELLA PIPELINE #TODO TOTEST
+
         if i < count - 1:
             page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
             page.wait_for_timeout(5000)
@@ -88,7 +92,7 @@ def getPathStagingFile(page, pipeline_filter: str, bifrost_instance: str):
             page.locator(".bifrostcss-fFaJCf").nth(7).click()  #Opening the pipeline details page
     return results
     
-
+#FUNZIONE ESPOSTA
 def moveFilesToImportQueue(page, result, bifrost_instance):
     page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/files/vf-import-processed/{result['path']}")
     page.locator('text="vf-import-processed"').wait_for(state="visible")

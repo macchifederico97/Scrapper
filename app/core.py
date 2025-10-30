@@ -1,5 +1,4 @@
 import os
-from playwright.sync_api import sync_playwright
 from legacy.WebService.WSPipelineRerun import pipeline_rerun
 from legacy.WebService.WSManageLogin import visualfabriq_login
 from legacy.WebService.WSPipelineRuntime import scrape_pipeline_last_run
@@ -7,22 +6,12 @@ from legacy.WebService.WSstatusScraperNewVer import scrape_pipeline_status
 from legacy.WebService.WSLogExtractor import log_extractor
 from legacy.WebService.WSFullExtractor import full_extractor
 from legacy.WebService.WSUserStatus import scrape_user_list
-from legacy.WebService.WSPipelineFile import setFileMappingPy
+from legacy.WebService.WSPipelineFile import setFileMappingPy   #TODO TO REMOVE
 from legacy.WebService.WSPipelineGetID import getID_pipelines
 
 STATE_PATH = os.getenv("STATE_PATH", "legacy/WebService/state.json")
 HEADLESS = os.getenv("HEADLESS", "true").lower() == "false" #TOCHANGE TRUE #DEBUGGGING
 
-'''
-def _new_context(p):
-    # Chromium from Playwright + --no-sandbox for containers
-    browser = p.chromium.launch(headless=HEADLESS, args=["--no-sandbox"])
-    if os.path.exists(STATE_PATH):
-        ctx = browser.new_context(storage_state=STATE_PATH, device_scale_factor=1)
-    else:
-        ctx = browser.new_context(device_scale_factor=1)
-    return browser, ctx
-'''
 #Login management function
 def login_and_cache_state(organisationId: str, email: str, password: str) -> dict:
     print("Starting login_and_cache_state function")
@@ -67,15 +56,6 @@ def fullExtract_pipeline(status_filter: str, bifrost_instance: str) -> dict:
     res = full_extractor(bifrost_instance, status_filter, HEADLESS)
     return res
 
-'''
-#Pipeline full extract function
-def setFileMappingCore(bifrost_instance: str, filterEnabled) -> dict:
-    print("Starting fullExtract_pipeline function")
-    res = setFileMappingPy(bifrost_instance, filterEnabled, HEADLESS)
-    return res
-'''
-
-#Pipeline update id function
 
 #Pipeline user status function
 def extract_userStatus(bifrost_instance: str):

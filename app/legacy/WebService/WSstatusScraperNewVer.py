@@ -19,7 +19,9 @@ def scrape_pipeline_status(bifrost_instance: str, filter_enabled: bool, headless
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=headlessPar,  # Use headless for webservice/API
-        args=["--no-sandbox", "--ignore-certificate-errors"])
+        args=["--no-sandbox", "--ignore-certificate-errors"]
+            #,executable_path="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+        )
         context = browser.new_context(storage_state="state.json", device_scale_factor=1)
         page = context.new_page()
         page.set_viewport_size({"width": 1600, "height": 1200})
@@ -30,16 +32,16 @@ def scrape_pipeline_status(bifrost_instance: str, filter_enabled: bool, headless
 
         for item in data["pipelines"]:  #ITERO PER TUTTE LE PIPELINE PRESENTI NEL DB
             pipeline_status_dict = {}   #CREO IL DICT DOVE SALVARE LE INFO DELLA PIPELINE
-            #TODO DA AGGIUNGERE FILTRO PER STATUS ENABLED
             pipelineStatus = item["status"]
             if (pipelineStatus == "Enabled" and filter_enabled == True) or filter_enabled == False:
                 page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{item["pipeline_id"]}/history")
                 page.wait_for_load_state()
                 try:
-                    # Prova a cliccare sul primo elemento entro 6000 ms (6 secondi) #PER CONTROLLARE SE LA PAGINA E CARICATA
-                    page.locator(".bifrostcss-bnFVuH").nth(0).click(timeout=8000)
+                    # Prova a cliccare sul primo elemento entro 8000 ms (8 secondi) #PER CONTROLLARE SE LA PAGINA E CARICATA
+                    page.locator(".bifrostcss-bnFVuH").nth(0).wait_for(state="visible", timeout=8000)
+
                 except TimeoutError:
-                    # Se non vi ene trovato, passa avanti senza fare nulla
+                    # Se non viene trovato, passa avanti senza fare nulla
                     pass
                 runStatuses = page.locator(".bifrostcss-kpbtZs")
                 if runStatuses.count() == 0:
@@ -54,4 +56,4 @@ def scrape_pipeline_status(bifrost_instance: str, filter_enabled: bool, headless
 
     return outputList
 
-print(scrape_pipeline_status("nttdata", True, False))    #DEBUGGING & TEST
+print(scrape_pipeline_status("nttdata", False, False))    #DEBUGGING & TEST
