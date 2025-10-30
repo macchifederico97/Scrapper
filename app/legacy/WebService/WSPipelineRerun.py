@@ -17,85 +17,107 @@ def pipeline_rerun(pipeline_filter: str, bifrost_instance: str, headlessPar: boo
         
         page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
         page.wait_for_timeout(5000)
-        page.locator('text="Name"').wait_for(state="visible")
-        page.wait_for_load_state()
-        #page.locator('text="Search by name..."').wait_for(state="visible")
-        page.get_by_placeholder("Search by name...").type(pipeline_filter)
-        page.wait_for_timeout(3000)
+        
+        #Filter pipeline
+        filterPipelineByName(page, pipeline_filter) 
+
         page.locator(".bifrostcss-fFaJCf").nth(7).click()  #Opening the pipeline details page
         
         page.wait_for_timeout(5000)        #check if data staging is present
-        staging_elements = page.locator('text=Data Staging')
 
-        count = staging_elements.count()
-        results = []
-        for i in range(count):
-            # Clicca sull'elemento i-esimo
-            staging_elements.nth(i).click()       
-            page.locator('text="Import Folder"').wait_for(state="visible")
-            path = page.locator(".bifrostcss-cGCXgx").nth(3).input_value()
-            format = page.locator(".bifrostcss-iFEVQl").nth(2).text_content()
-            print(f"Import Folder Path: {path}, Format: {format}")
-            results.append({"path": path, "format": format})
-
-            if i < count - 1:
-                page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
-                page.wait_for_timeout(5000)
-                page.locator('text="Name"').wait_for(state="visible")
-                page.wait_for_load_state()
-                page.get_by_placeholder("Search by name...").type(pipeline_filter)
-                page.wait_for_timeout(3000)
-                page.locator(".bifrostcss-fFaJCf").nth(7).click()  #Opening the pipeline details page
-
+        #get staging file path
+        results = getPathStagingFile(page, pipeline_filter, bifrost_instance) 
+        
+        #move files to import-queue
         for result in results:
-            # Go to the page
-            page.goto(f"https://app.eu.visualfabriq.com/bifrost/nttdata/files/vf-import-processed/{result['path']}")
-            page.locator('text="vf-import-processed"').wait_for(state="visible")
-            page.wait_for_timeout(3000)
-            if page.locator('.bifrostcss-ieEbAG').is_visible():
-                print("Folder is empty.")
-            else:
-                print("Folder contains files.")
-                page.get_by_placeholder("Search").nth(1).fill(result['format'])
-
-                # Move files to import-queue
-                page.locator(".bifrostcss-edwLhL").nth(0).click() #flag
-                page.wait_for_timeout(1000)
-                page.click('text="Move file(s)"')
-                page.wait_for_timeout(3000)
-                page.locator('.bifrostcss-dSqOgl').nth(1).locator('.bifrostcss-WnhIC').nth(0).click()
-                page.wait_for_timeout(3000)
-
-                page.click('text="vf-import-queue"')
-
-                page.locator('text="Moving files to:"').wait_for(state="visible")
-                # Cycle on each folder
-                for folder in result['path'].split("/"):
-                    page.get_by_placeholder("Search").nth(1).fill(folder)
-                    page.wait_for_timeout(3000)
-                    page.locator(".bifrostcss-WnhIC").last.click()
-
-                page.click('text="Move"')
-
+            moveFilesToImportQueue(page, result) 
+        
         #click Run pipeline
-        # Go to the page
-        page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
-
-        # Filter pipeline
-        page.wait_for_load_state()
-        page.get_by_placeholder("Search by name...").type(pipeline_filter)
-        page.wait_for_timeout(3000)
-
-        if page.locator(".bifrostcss-eXwpzm.undefined").count() == 0:
-            return ""   #error raised if no pipeline has been found
-
-        # Click pipeline elements
-        page.locator(".bifrostcss-fFaJCf").nth(4).click()   #click on the execute button
-        page.wait_for_timeout(3000)
+        clickButtonRun(page, bifrost_instance, pipeline_filter)
 
         # Cleanup browser
         context.close()
         browser.close()
 
-
         return pipeline_filter
+
+
+def filterPipelineByName(page, pipeline_filter):
+    page.locator('text="Name"').wait_for(state="visible")
+    page.wait_for_load_state()
+    #page.locator('text="Search by name..."').wait_for(state="visible")
+    page.get_by_placeholder("Search by name...").type(pipeline_filter)
+    page.wait_for_timeout(3000)
+
+def clickButtonRun(page, bifrost_instance, pipeline_filter):  #Lightweight function of scrape_pipeline_last_run from WSPipelineRuntime
+    page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
+
+    # Filter pipeline
+    page.wait_for_load_state()
+    page.get_by_placeholder("Search by name...").type(pipeline_filter)
+    page.wait_for_timeout(3000)
+
+    if page.locator(".bifrostcss-eXwpzm.undefined").count() == 0:
+        return ""   #error raised if no pipeline has been found
+
+    # Click pipeline elements
+    page.locator(".bifrostcss-fFaJCf").nth(4).click()   #click on the execute button
+    page.wait_for_timeout(3000)
+
+def getPathStagingFile(page, pipeline_filter: str, bifrost_instance: str):
+    staging_elements = page.locator('text=Data Staging')
+
+    count = staging_elements.count()
+    results = []
+    for i in range(count):
+        # Clicca sull'elemento i-esimo
+        staging_elements.nth(i).click()       
+        page.locator('text="Import Folder"').wait_for(state="visible")
+        path = page.locator(".bifrostcss-cGCXgx").nth(3).input_value()
+        format = page.locator(".bifrostcss-iFEVQl").nth(2).text_content()
+        print(f"Import Folder Path: {path}, Format: {format}")
+        results.append({"path": path, "format": format})
+
+        if i < count - 1:
+            page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
+            page.wait_for_timeout(5000)
+            page.locator('text="Name"').wait_for(state="visible")
+            page.wait_for_load_state()
+            page.get_by_placeholder("Search by name...").type(pipeline_filter)
+            page.wait_for_timeout(3000)
+            page.locator(".bifrostcss-fFaJCf").nth(7).click()  #Opening the pipeline details page
+    return results
+    
+
+def moveFilesToImportQueue(page, result):
+    page.goto(f"https://app.eu.visualfabriq.com/bifrost/nttdata/files/vf-import-processed/{result['path']}")
+    page.locator('text="vf-import-processed"').wait_for(state="visible")
+    page.wait_for_timeout(2000)
+    if page.locator('.bifrostcss-ieEbAG').is_visible():
+        print("No files found in" , result['path'])
+    else:
+        print("Files found in" , result['path'])
+        page.get_by_placeholder("Search").nth(0).fill(result['format'])
+        page.wait_for_timeout(3000)
+        print(page.locator(".bifrostcss-edwLhL").count())
+        # Move files to import-queue
+        if page.locator(".bifrostcss-edwLhL").count() > 1:
+            page.locator(".bifrostcss-edwLhL").nth(1).click() #flag
+            page.wait_for_timeout(1000)
+            page.click('text="Move file(s)"')
+            page.wait_for_timeout(3000)
+            page.locator('.bifrostcss-dSqOgl').nth(1).locator('.bifrostcss-WnhIC').nth(0).click()
+            page.wait_for_timeout(3000)
+
+            page.click('text="vf-import-queue"')
+
+            page.locator('text="Moving files to:"').wait_for(state="visible")
+            # Cycle on each folder
+            for folder in result['path'].split("/"):
+                page.get_by_placeholder("Search").nth(1).fill(folder)
+                page.wait_for_timeout(3000)
+                page.locator(".bifrostcss-WnhIC").last.click()
+
+            page.click('text="Move"')
+        else:
+            print("No files with format" , result['format'] , "found in" , result['path'])
