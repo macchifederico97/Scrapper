@@ -1,7 +1,8 @@
 from playwright.sync_api import sync_playwright
 import os
 
-#FUNZIONE ESPOSTA, #TODO TOTEST
+#FUNZIONE ESPOSTA, RERUN COMPLETO CON SPOSTAMENTO DEL FILE
+#TODO AGGIUNGERE CREAZIONE DI FOLDER IN IMPORT QUEUE IN CASO DI FOLDER NON TROVATA
 def pipeline_rerun(pipeline_filter: str, bifrost_instance: str, headlessPar: bool) -> str:
     """
     Clicks the execute button for the pipeline in input
@@ -47,7 +48,7 @@ def filterPipelineByName(page, pipeline_filter):
     page.wait_for_load_state()
     #page.locator('text="Search by name..."').wait_for(state="visible")
     page.get_by_placeholder("Search by name...").type(pipeline_filter)
-    page.wait_for_timeout(3000)
+    page.wait_for_timeout(5000)
 
 
 def clickButtonRun(page, bifrost_instance, pipeline_filter):  #Lightweight function of scrape_pipeline_last_run from WSPipelineRuntime
@@ -86,9 +87,10 @@ def getPathStagingFile(page, pipeline_filter: str, bifrost_instance: str):
         results.append({"path": path, "format": format})
 
         page.locator(".bifrostcss-iRNFVM").nth(0).click()   #RITORNO ALLA PAGINA DEGLI STEP DELLA PIPELINE
+        page.wait_for_timeout(500)
     return results
     
-
+#SPOSTA SEMPRE IL PRIMO FILE TROVATO IN ALTO, IN ORDINE DECRESCENTE DI CARICAMENTO
 def moveFilesToImportQueue(page, result, bifrost_instance):
     page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/files/vf-import-processed/{result['path']}")
     page.locator('text="vf-import-processed"').wait_for(state="visible")
@@ -99,6 +101,14 @@ def moveFilesToImportQueue(page, result, bifrost_instance):
         print("Files found in" , result['path'])
         page.get_by_placeholder("Search").nth(0).fill(result['format'])
         page.wait_for_timeout(3000)
+
+        #ORDINO I FILE PER ORDINE DECRESCENTE DI UPLOAD
+        page.locator(".bifrostcss-qqsxH").nth(3).click()
+        page.wait_for_timeout(500)
+        page.locator(".bifrostcss-qqsxH").nth(3).click()
+        page.wait_for_timeout(500)
+
+
         print(page.locator(".bifrostcss-edwLhL").count())
         # Move files to import-queue
         if page.locator(".bifrostcss-edwLhL").count() > 1:
@@ -122,8 +132,9 @@ def moveFilesToImportQueue(page, result, bifrost_instance):
         else:
             print("No files with format" , result['format'] , "found in" , result['path'])
 
-#FUNZIONE ESPOSTA DEL SIMPLE RERUN
-def simpleRerun(bifrost_instance, pipeline_filter, headlessPar: bool):
+
+#FUNZIONE ESPOSTA DEL SIMPLE RERUN, CLICCA IL PULSANTE DI RERUN DATA LA PIPELINE
+def simpleRerun(pipeline_filter, bifrost_instance, headlessPar: bool):
     with sync_playwright() as p:
         # Launch browser (using Chrome already installed)
         browser = p.chromium.launch(
@@ -148,23 +159,4 @@ def simpleRerun(bifrost_instance, pipeline_filter, headlessPar: bool):
         page.wait_for_timeout(3000)
         return f"Pipeline {pipeline_filter} rerunned successfully"
 
-
-
-#TEST & DEBUGGING
-with sync_playwright() as p:
-    browser = p.chromium.launch(
-        headless=False  # headless=False = show the browser
-        ,args=["--no-sandbox", "--ignore-certificate-errors"]
-        , executable_path="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-    )
-    if os.path.exists("state.json"):
-        context = browser.new_context(storage_state="state.json")
-    else:
-        context = browser.new_context(device_scale_factor=1)
-    page = context.new_page()
-    page.goto("https://app.eu.visualfabriq.com/bifrost/nttdata/pipelines")
-    page.get_by_placeholder("Search by name...").type("Import Baseline")
-    page.wait_for_timeout(2000)
-    page.locator(".bifrostcss-fFaJCf").nth(7).click()  # CLICK ON THE PIPELINE STEPS
-    page.wait_for_timeout(1000)
-    print(getPathStagingFile(page, "Import Baseline", "nttdata"))
+#print(pipeline_rerun("Import Baseline", "nttdata", False))  #TEST & DEBUGGING

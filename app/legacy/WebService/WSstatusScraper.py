@@ -34,7 +34,8 @@ def scrape_pipeline_status(bifrost_instance: str, filter_enabled: bool, headless
             pipeline_status_dict = {}   #CREO IL DICT DOVE SALVARE LE INFO DELLA PIPELINE
             pipelineStatus = item["status"]
             if (pipelineStatus == "Enabled" and filter_enabled == True) or filter_enabled == False:
-                page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{item["pipeline_id"]}/history")
+                pipeline_id = item["pipeline_id"]
+                page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{pipeline_id}/history")
                 page.wait_for_load_state()
                 try:
                     # Prova a cliccare sul primo elemento entro 8000 ms (8 secondi) #PER CONTROLLARE SE LA PAGINA E CARICATA
@@ -56,4 +57,4 @@ def scrape_pipeline_status(bifrost_instance: str, filter_enabled: bool, headless
 
     return outputList
 
-print(scrape_pipeline_status("nttdata", False, False))    #DEBUGGING & TEST
+#print(scrape_pipeline_status("nttdata", False, False))    #DEBUGGING & TEST

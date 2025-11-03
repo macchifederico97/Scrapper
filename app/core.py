@@ -1,6 +1,6 @@
 import os
 
-from app.legacy.WebService.WSPipelineRerun import simpleRerun
+from legacy.WebService.WSPipelineRerun import simpleRerun, pipeline_rerun
 from legacy.WebService.WSPipelineRerun import pipeline_rerun
 from legacy.WebService.WSManageLogin import visualfabriq_login
 from legacy.WebService.WSPipelineRuntime import scrape_pipeline_last_run
@@ -14,7 +14,7 @@ from legacy.WebService.WSPipelineIncreaseTimeout import pipeline_increase_timeou
 from legacy.WebService.WSPipelineIncreaseJobSize import pipeline_increase_job_size
 
 STATE_PATH = os.getenv("STATE_PATH", "legacy/WebService/state.json")
-HEADLESS = os.getenv("HEADLESS", "true").lower() == "false" #TOCHANGE TRUE #DEBUGGGING
+HEADLESS = os.getenv("HEADLESS", "true").lower() == "true" #TOCHANGE TRUE #DEBUGGGING
 
 #Login management function
 def login_and_cache_state(organisationId: str, email: str, password: str) -> dict:
@@ -28,7 +28,11 @@ def rerun_pipeline(pipeline_id: str, bifrost_instance: str) -> dict:
     simpleRerun(pipeline_id, bifrost_instance, HEADLESS)
     return {"pipeline": pipeline_id, "started": True}
 
-#TODO FUNZIONE COMPLETA DI RERUN, CHE OTTIENE IL PATH DEL FILE, LO SPOSTA E RERUNNA LA PIPELINE
+#Pipeline complete rerun function, RERUN COMPLETO CON SPOSTAMENTO DEL FILE
+def complete_rerun_pipeline(pipeline_id: str, bifrost_instance: str) -> dict:
+    print("Starting complete_rerun_pipeline function")
+    pipeline_rerun(pipeline_id, bifrost_instance, HEADLESS)
+    return {"pipeline": pipeline_id, "started": True}
 
 #Pipeline runtime function
 def runtime_pipeline(pipeline_id: str, bifrost_instance: str) -> dict:
@@ -44,7 +48,6 @@ def getID_pipeline(bifrost_instance: str, filterEnabled: bool = False) -> dict:
     return res
 
 #Pipeline status function
-#TODO TO CHANGE CON NEW VERSION
 def status_pipeline(status_filter: str, bifrost_instance: str) -> dict:
     print("Starting status_pipeline function")
     res = scrape_pipeline_status(bifrost_instance, bool(status_filter), HEADLESS)

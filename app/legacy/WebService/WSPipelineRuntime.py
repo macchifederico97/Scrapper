@@ -30,9 +30,6 @@ def scrape_pipeline_last_run(pipeline_filter: str, bifrost_instance: str, headle
 
         if flIdFound:
             # AUTO SEARCH TRAMITE PIPELINE_ID NEL DATABASE
-            page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
-            page.wait_for_load_state()
-            page.wait_for_timeout(6000)
 
             # Filter pipeline
             page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{pipeline_id}/history")

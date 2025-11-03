@@ -2,15 +2,15 @@ from datetime import datetime, timedelta
 import time
 import json
 from flask import Flask, request, jsonify
-from core import login_and_cache_state, rerun_pipeline, runtime_pipeline, log_pipeline, fullExtract_pipeline, extract_userStatus, status_pipeline, getID_pipeline, increaseTimeout_pipeline, increaseJobSize_pipeline
+from core import login_and_cache_state, rerun_pipeline, runtime_pipeline, log_pipeline, fullExtract_pipeline, extract_userStatus, status_pipeline, getID_pipeline, increaseTimeout_pipeline, increaseJobSize_pipeline, complete_rerun_pipeline
 from legacy.WebService.ConfigParser import parse_config
 from filelock import FileLock
 
 # Config: Log-In Refresh Parameters
-LOCK_FILE_LOGIN = "login\.lock"
+LOCK_FILE_LOGIN = "login.lock"
 LOCK_FILE_PIPELINE_ID = "pipeline_id.lock"
-REFRESH_INTERVAL = 3600  #1 hour
-REFRESH_INTERVAL_PIPELINE_ID = 5
+REFRESH_INTERVAL = 3600  #1 hour    #TODO TOCHANGE
+REFRESH_INTERNAL_PIPELINE_ID = 60 #1 hour #TODO TOCHANGE
 last_login_time = 0
 
 #Login function not exposed. Login managed via config.ini file
@@ -58,7 +58,7 @@ def ensure_valid_pipeline_id(bifrost_instance,  call_from : str, minutes_delta :
                 with lock.acquire(): #FILE LOCK
                     getID_pipeline(name_instance, filterEnabled) 
             else:
-                if len(pipelines["pipelines"]) == 0 or (datetime.now() - datetime.strptime(pipelines["last_updated"], "%Y-%m-%dT%H:%M:%S")) > timedelta(minutes_delta):  #CONTROLLO SE AGGIORNARE IL FILE CON LE PIPELINE ID
+                if len(pipelines["pipelines"]) == 0 or (datetime.now() - datetime.strptime(pipelines["last_updated"], "%Y-%m-%dT%H:%M:%S")) > timedelta(minutes = minutes_delta):  #CONTROLLO SE AGGIORNARE IL FILE CON LE PIPELINE ID
                     with lock.acquire(): #FILE LOCK
                         getID_pipeline(name_instance, filterEnabled) 
     else:
@@ -78,9 +78,9 @@ def create_app():
         ensure_valid_login()
         bifrost_instance = request.args.get("bifrost_instance")
         if bifrost_instance:
-            ensure_valid_pipeline_id(bifrost_instance, "before_request", REFRESH_INTERVAL_PIPELINE_ID, True)
+            ensure_valid_pipeline_id(bifrost_instance, "before_request", REFRESH_INTERNAL_PIPELINE_ID, True)
         else:
-            ensure_valid_pipeline_id(None, "before_request", REFRESH_INTERVAL_PIPELINE_ID, True)
+            ensure_valid_pipeline_id(None, "before_request", REFRESH_INTERNAL_PIPELINE_ID, True)
         print("Login State and Pipeline_id are currently updated")
 
     @app.get("/healthz")
@@ -101,6 +101,21 @@ def create_app():
             return jsonify(res)
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+
+    # Call to function: pipeline_rerun
+    @app.post("/api/moveFileRerun")
+    def pipeline_complete_rerun():
+        print("pipeline_moveFileRerun: Starting")
+        pipeline_name = request.args.get("pipeline_name")
+        bifrost_instance = request.args.get("bifrost_instance")
+        if not pipeline_name or not bifrost_instance:
+            return jsonify({"error": "pipeline_moveFileRerun: pipeline_id and bifrost_instance required"}), 400
+        try:
+            res = complete_rerun_pipeline(pipeline_name, bifrost_instance)
+            print("pipeline_moveFileRerun: Completed")
+            return jsonify(res)
+        except Exception as e:
+            return jsonify({"error": "pipeline_moveFileRerun: "+str(e)}), 500
 
     #Call to function: pipeline_runtime
     @app.get("/api/runtime")
@@ -197,7 +212,7 @@ def create_app():
             return jsonify({"error": str(e)}), 500
 
     # Call to function: pipeline_increase_timeout
-    @app.get("/api/pipelineIncreaseTimeout")
+    @app.post("/api/pipelineIncreaseTimeout")
     def pipeline_increaseTimeout():
         print("pipeline_increase_timeout: Starting")
         pipeline_name = request.args.get("pipeline_name")
@@ -214,7 +229,7 @@ def create_app():
             return jsonify({"error": str(e)}), 500
 
     # Call to function: pipeline_increase_job_size
-    @app.get("/api/pipelineIncreaseJobSize")
+    @app.post("/api/pipelineIncreaseJobSize")
     def pipeline_increaseJobSize():
         print("pipeline_increase_job_size: Starting")
         pipeline_name = request.args.get("pipeline_name")
@@ -253,5 +268,5 @@ def create_app():
 # Instance for gunicorn "app.main:app"
 app = create_app()
 ensure_valid_login() #Manage login after creating the app
-ensure_valid_pipeline_id(None, "create_app", 1440, False)  #Refresh pipeline.json the first run of the day
+ensure_valid_pipeline_id(None, "create_app", REFRESH_INTERNAL_PIPELINE_ID, False)  #Refresh pipeline.json the first run of the day
 print("Login completed, calls can be made now")

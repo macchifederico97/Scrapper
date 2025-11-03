@@ -1,8 +1,15 @@
 from datetime import datetime
-from legacy.WebService.WSPipelineGetID import getID_pipelines
+#from legacy.WebService.WSPipelineGetID import getID_pipelinesù
 from playwright.sync_api import sync_playwright
 from pathlib import Path
 import json
+import sys
+
+#TODO DA RIMUOVERE
+
+sys.path.insert(0, "legacy/WebService")
+from WSPipelineGetID import getID_pipelines
+sys.path.pop(0)
 
 #FUNCTION THAT RETURNS THE NAME AND ID OF ALL PIPELINES IN THE SYSTEM
 def getPipelineNames(page, bifrost_instance:str, statusFilter: bool): 

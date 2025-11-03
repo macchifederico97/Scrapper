@@ -45,7 +45,7 @@ def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool
 
 
         #CALCOLO IL RUNTIME
-        dt_format = "%d/%m/%Y, %H:%M:%S %Z"
+        dt_format = "%m/%d/%Y, %I:%M:%S %p %Z"
         start_dt = datetime.strptime(startTime, dt_format)
         finish_dt = datetime.strptime(finishTime, dt_format)
         duration_minutes = (finish_dt - start_dt).total_seconds() / 60.0
@@ -92,4 +92,4 @@ def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool
         return outputList
 
 
-print(full_extractor(bifrost_instance="nttdata", filter_enabled="false", headlessPar=False))    #TEXT/DEBUGGING
+#print(full_extractor(bifrost_instance="nttdata", filter_enabled="false", headlessPar=False))    #TEXT/DEBUGGING
