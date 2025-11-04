@@ -11,7 +11,7 @@ from legacy.WebService.WSPipelineFile import setFileMappingPy
 from legacy.WebService.WSPipelineGetID import getID_pipelines
 
 STATE_PATH = os.getenv("STATE_PATH", "legacy/WebService/state.json")
-HEADLESS = os.getenv("HEADLESS", "true").lower() == "false" #TOCHANGE TRUE #DEBUGGGING
+HEADLESS = os.getenv("HEADLESS", "true").lower() == "true" #TOCHANGE TRUE #DEBUGGGING
 
 '''
 def _new_context(p):

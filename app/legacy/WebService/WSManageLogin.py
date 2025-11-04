@@ -7,7 +7,7 @@ def visualfabriq_login(organisation_id: str, mail: str, password: str) -> str:
     Returns a message describing the result.
     """
 
-    HEADLESS = os.getenv("HEADLESS", "true").lower() == "false" #DEBUGGING, TO SET TO TRUE
+    HEADLESS = os.getenv("HEADLESS", "true").lower() == "true" #DEBUGGING, TO SET TO TRUE
 
     print("Starting login")
     with sync_playwright() as p:
