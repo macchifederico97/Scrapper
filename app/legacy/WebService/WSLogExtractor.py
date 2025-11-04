@@ -141,5 +141,5 @@ def log_extractor(pipeline_filter: str, bifrost_instance: str, headlessPar: bool
         return outputList
         #return save_path, download.suggested_filename
 
-print(log_extractor("Sample Import Exchange Rate File", "nttdata", False)) #TEST & DEBUGGING
+#print(log_extractor("Sample Import Exchange Rate File", "nttdata", False)) #TEST & DEBUGGING
 #print(log_extractor("Import SAP Pricing Tables", "nttdata", False)) #TEST & DEBUGGING

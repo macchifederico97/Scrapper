@@ -116,7 +116,9 @@ def getID_pipelines(bifrost_instance: str, filterEnabled: bool, headlessPar: boo
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=headlessPar
-            , args=["--no-sandbox", "--ignore-certificate-errors"])
+            , args=["--no-sandbox", "--ignore-certificate-errors"]
+            #, executable_path="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+        )
         context = browser.new_context(storage_state="state.json", device_scale_factor=1)
         page = context.new_page()
         page.set_viewport_size({"width": 1600, "height": 1200})
@@ -157,28 +159,11 @@ def getID_pipelines(bifrost_instance: str, filterEnabled: bool, headlessPar: boo
             "last_updated": timestamp,
             "pipelines": outputList
         }
-        '''
-        #TODO Scrittura, da sostituire con scrittura intelligente
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(fileData, f, indent=4)
-        '''
 
         smartAppendData(str(file_path), fileData)
-
-        '''
-        #OUTPUT FILE TESTING
-        nome_cercato = "TTR - Contracts Status update"
-
-        # Reading from file
-        with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
-            pipelines = json.load(f)
-        
-        # ID Extraction
-        id_pipeline = next((p["pipeline_id"] for p in pipelines["pipelines"] if p["pipeline_name"] == nome_cercato), None)
-        print(f"L'ID della pipeline '{nome_cercato}' è: {id_pipeline}")
-        #END OF OUTPUT FILE TESTING
-        '''
+        print("File pipelines.json updated in folder: " + str(file_path))    #DEBUGGING
         return outputList
 
 
-print(getID_pipelines("nttdata",False, False))    #DEBUG & TESTING
+
+#print(getID_pipelines("nttdata",False, False))    #DEBUG & TESTING
