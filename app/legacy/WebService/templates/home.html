@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>API Dashboard</title>
+  <style>
+    :root {
+      --primary: #0078d7;
+      --primary-dark: #005ea6;
+      --bg: #f9fafc;
+      --card-bg: #ffffff;
+      --border: #e0e0e0;
+      --text: #333;
+      --font: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 40px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 2.5em;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.2em;
+      color: var(--primary-dark);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    pre {
+      background-color: #f0f0f0;
+      padding: 16px;
+      border-radius: 6px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .output {
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <nav style="background-color: #f0f0f0; padding: 10px; border-radius: 6px;">
+  <a href="/" style="margin-right: 20px; font-weight: bold;">🏠 API Dashboard</a>
+  <a href="/batch" style="font-weight: bold;">🔁 Batch Dashboard</a>
+</nav>
+
+  <h1>🔧 API Dashboard</h1>
+  <div class="grid">
+    <div class="card">
+      <h2>/healthz</h2>
+      <button onclick="checkHealth()">Check Health</button>
+    </div>
+
+    <div class="card">
+      <h2>/api/rerun</h2>
+      <input id="rerun_pipeline" placeholder="pipeline_name" />
+      <input id="rerun_bifrost" placeholder="bifrost_instance" />
+      <button onclick="callApi('POST', '/api/rerun', {
+        pipeline_name: get('rerun_pipeline'),
+        bifrost_instance: get('rerun_bifrost')
+      })">Rerun Pipeline</button>
+    </div>
+
+    <div class="card">
+      <h2>/api/runtime</h2>
+      <input id="runtime_pipeline" placeholder="pipeline_name" />
+      <input id="runtime_bifrost" placeholder="bifrost_instance" />
+      <button onclick="callApi('GET', '/api/runtime', {
+        pipeline_name: get('runtime_pipeline'),
+        bifrost_instance: get('runtime_bifrost')
+      })">Get Runtime</button>
+    </div>
+
+    <div class="card">
+      <h2>/api/getID</h2>
+      <input id="getid_bifrost" placeholder="bifrost_instance" />
+      <select id="getid_filter">
+        <option value="true">Filter: true</option>
+        <option value="false">Filter: false</option>
+      </select>
+      <button onclick="callApi('GET', '/api/getID', {
+        bifrost_instance: get('getid_bifrost'),
+        filter: get('getid_filter')
+      })">Get ID</button>
+    </div>
+
+    <div class="card">
+      <h2>/api/pipelineStatus</h2>
+      <input id="status_bifrost" placeholder="bifrost_instance" />
+      <input id="status_filter" placeholder="status_filter" />
+      <button onclick="callApi('GET', '/api/pipelineStatus', {
+        bifrost_instance: get('status_bifrost'),
+        status_filter: get('status_filter')
+      })">Get Status</button>
+    </div>
+
+    <div class="card">
+      <h2>/api/lastLog</h2>
+      <input id="log_pipeline" placeholder="pipeline_name" />
+      <input id="log_bifrost" placeholder="bifrost_instance" />
+      <button onclick="callApi('GET', '/api/lastLog', {
+        pipeline_name: get('log_pipeline'),
+        bifrost_instance: get('log_bifrost')
+      })">Get Last Log</button>
+    </div>
+
+    <div class="card">
+      <h2>/api/pipelineFullExtract</h2>
+      <input id="extract_bifrost" placeholder="bifrost_instance" />
+      <input id="extract_filter" placeholder="status_filter" />
+      <button onclick="callApi('GET', '/api/pipelineFullExtract', {
+        bifrost_instance: get('extract_bifrost'),
+        status_filter: get('extract_filter')
+      })">Full Extract</button>
+    </div>
+
+    <div class="card">
+      <h2>/api/userStatus</h2>
+      <input id="user_vf" placeholder="visualfabriq_instance (optional)" />
+      <button onclick="callApi('GET', '/api/userStatus', {
+        visualfabriq_instance: get('user_vf')
+      })">Get User Status</button>
+    </div>
+  </div>
+
+  <div class="output">
+    <h2>📦 API Response</h2>
+    <pre id="output">...</pre>
+  </div>
+
+  <script>
+    function get(id) {
+      return document.getElementById(id).value;
+    }
+    function checkHealth() {
+        fetch("/healthz")
+        .then(res => {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.json();
+        })
+        .then(data => {
+            document.getElementById("output").textContent = data.status;
+        })
+        .catch(err => {
+            document.getElementById("output").textContent = "Errore: " + err.message;
+        });
+    }
+
+    function callApi(method, endpoint, params = {}) {
+      const url = new URL(endpoint, window.location.origin);
+      if (method === 'GET') {
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+      }
+
+      fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: method === 'POST' ? JSON.stringify(params) : null
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+      })
+      .catch(err => {
+        document.getElementById("output").textContent = "Errore: " + err;
+      });
+    }
+  </script>
+
+  <!-- ✅ Inserisci lo script qui -->
+<script>
+  function get(id) {
+    return document.getElementById(id).value;
+  }
+
+  function callApi(method, endpoint, params = {}) {
+    const url = new URL(endpoint, window.location.origin);
+    if (method === 'GET') {
+      Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+    }
+
+    fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: method === 'POST' ? JSON.stringify(params) : null
+    })
+    .then(async res => {
+      const contentType = res.headers.get("content-type");
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`HTTP ${res.status}: ${text}`);
+      }
+      if (contentType && contentType.includes("application/json")) {
+        return res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(`Non-JSON response: ${text}`);
+      }
+    })
+    .then(data => {
+      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+    })
+    .catch(err => {
+      document.getElementById("output").textContent = "Errore: " + err.message;
+    });
+  }
+</script>
+
+
+</body>
+</html>
