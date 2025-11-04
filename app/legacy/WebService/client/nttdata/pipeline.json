@@ -1,5 +1,5 @@
 {
-    "last_updated": "2025-10-27T17:59:28",
+    "last_updated": "2025-10-30T14:52:14",
     "pipelines": [
         {
             "pipeline_name": "Accruals - Refresh Accruals within Reporting",
@@ -442,6 +442,12 @@
         {
             "pipeline_name": "TTR - Update Revenue Plan",
             "pipeline_id": "3c07ee76-755b-4014-8aa6-20455431d06f",
+            "schedule": "0 12 * * ? * (GMT)",
+            "status": "Disabled"
+        },
+        {
+            "pipeline_name": "Trade Promotions - Refresh module Reporting",
+            "pipeline_id": "c0a32058-ab78-47dc-8b9d-277a9763bc61",
             "schedule": "0 12 * * ? * (GMT)",
             "status": "Disabled"
         }

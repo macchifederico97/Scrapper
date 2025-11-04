@@ -7,13 +7,15 @@ def visualfabriq_login(organisation_id: str, mail: str, password: str) -> str:
     Returns a message describing the result.
     """
 
-    HEADLESS = os.getenv("HEADLESS", "true").lower() == "false" #DEBUGGING, TO SET TO TRUE
+    HEADLESS = os.getenv("HEADLESS", "true").lower() == "true" #DEBUGGING, TO SET TO TRUE
 
     print("Starting login")
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=HEADLESS  # headless=False = show the browser
-            ,args=["--no-sandbox", "--ignore-certificate-errors"])
+            ,args=["--no-sandbox", "--ignore-certificate-errors"]
+            #, executable_path="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+        )
         if os.path.exists("state.json"):
             context = browser.new_context(storage_state="state.json")
         else:
@@ -53,4 +55,4 @@ def visualfabriq_login(organisation_id: str, mail: str, password: str) -> str:
             browser.close()
             return "User already logged in"
 
-print(visualfabriq_login("nttdata","",""))
+#print(visualfabriq_login("nttdata","",""))

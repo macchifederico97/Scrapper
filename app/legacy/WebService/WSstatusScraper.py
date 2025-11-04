@@ -1,69 +1,11 @@
-from playwright.sync_api import sync_playwright
-
-# ----------------------------
-# Helper Functions
-# ----------------------------
-def _get_status_box_pos_x(page, valid_classes):
-    """
-    Returns the X coordinate of the first valid status box on the page.
-    Returns 0 if no boxes are found.
-    """
-    x_positions = []
-    for bifrost_class in valid_classes:
-        elements = page.locator(bifrost_class)
-        count = elements.count()
-        if count != 0:
-            element = elements.nth(0)
-            box = element.bounding_box()
-            center_x = box["x"] + (box["width"] / 2)
-            x_positions.append(center_x)
-
-    return min(x_positions) if x_positions else 0
-
-
-def _get_status_box_pos_y(box):
-    """
-    Given a box, returns its center Y coordinate.
-    """
-    return box["y"] + box["height"] / 2
-
-
-def _get_status_text(page, pos_x, pos_y):
-    """
-    Moves the mouse to a pipeline status position, double-clicks to highlight text,
-    and returns the selected text as the status of the last run.
-    """
-    page.mouse.move(pos_x, pos_y)
-    page.wait_for_timeout(500)
-    page.mouse.dblclick(pos_x, pos_y - 43)  # Offset for hover text
-    return page.evaluate("window.getSelection().toString()").strip()
-
-
-def _filter_status_enabled(page):
-    """
-    Applies the 'Pipeline Status = Enabled' filter on the page.
-    """
-    page.wait_for_load_state()
-    page.click("text=Filters")
-    page.wait_for_timeout(500)
-
-    page.locator(".bifrostcss-JgNqY").nth(2).click()
-    page.wait_for_timeout(500)
-    page.locator(".bifrostcss-eGauau").nth(2).click()
-    page.wait_for_timeout(500)
-    page.locator(".bifrostcss-JgNqY").nth(3).click()
-    page.wait_for_timeout(500)
-    page.locator(".bifrostcss-eGauau").nth(0).click()
-    page.wait_for_timeout(500)
-
-    page.click("text=Apply")
-    page.wait_for_timeout(1000)
+from playwright.sync_api import sync_playwright, TimeoutError
+import json
 
 
 # ----------------------------
 # Main scraping function for API
 # ----------------------------
-def scrape_pipeline_status(bifrost_instance: str, filter_enabled: str, headlessPar: bool):
+def scrape_pipeline_status(bifrost_instance: str, filter_enabled: bool, headlessPar: bool):
     """
     Scrapes Bifrost pipelines and returns their last run status.
     Parameters:
@@ -71,73 +13,48 @@ def scrape_pipeline_status(bifrost_instance: str, filter_enabled: str, headlessP
     Returns:
         dict: {pipeline_name: last_run_status}
     """
-    valid_bifrost_classes = [".bifrostcss-hBAxAh", ".bifrostcss-dSdRKl", ".bifrostcss-fuPzxl"]
-    valid_statuses = ["Successful", "Failed", "Stopped", "No Action"]
 
-    pipeline_status_dict = {}
+    outputList = []
 
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=headlessPar,  # Use headless for webservice/API
-        args=["--no-sandbox", "--ignore-certificate-errors"])
+        args=["--no-sandbox", "--ignore-certificate-errors"]
+            #,executable_path="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+        )
         context = browser.new_context(storage_state="state.json", device_scale_factor=1)
         page = context.new_page()
         page.set_viewport_size({"width": 1600, "height": 1200})
 
-        page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
+        # GET PIPELINE ID
+        with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
 
-        page.wait_for_load_state()
-        page.wait_for_timeout(8000)
+        for item in data["pipelines"]:  #ITERO PER TUTTE LE PIPELINE PRESENTI NEL DB
+            pipeline_status_dict = {}   #CREO IL DICT DOVE SALVARE LE INFO DELLA PIPELINE
+            pipelineStatus = item["status"]
+            if (pipelineStatus == "Enabled" and filter_enabled == True) or filter_enabled == False:
+                pipeline_id = item["pipeline_id"]
+                page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{pipeline_id}/history")
+                page.wait_for_load_state()
+                try:
+                    # Prova a cliccare sul primo elemento entro 8000 ms (8 secondi) #PER CONTROLLARE SE LA PAGINA E CARICATA
+                    page.locator(".bifrostcss-bnFVuH").nth(0).wait_for(state="visible", timeout=8000)
 
-        filterEnabled = filter_enabled.lower()
-        if filterEnabled == "true":
-            _filter_status_enabled(page)
-
-        exit_loop = False
-        while not exit_loop:
-            elements = page.locator(".bifrostcss-eXwpzm.undefined")
-            count = elements.count()
-
-            if count == 0:
-                break
-
-            first_pipeline_name = elements.nth(0).inner_text()
-            if first_pipeline_name in pipeline_status_dict:
-                break  # Already visited this page
-
-            status_pos_x = _get_status_box_pos_x(page, valid_bifrost_classes)
-            if status_pos_x == 0:
-                continue  # Skip if no status boxes
-
-            for i in range(count):
-                element = elements.nth(i)
-                pipeline_name = element.inner_text()
-                box = element.bounding_box()
-
-                if status_pos_x == 0:
-                    status_text = "Never Executed"
+                except TimeoutError:
+                    # Se non viene trovato, passa avanti senza fare nulla
+                    pass
+                runStatuses = page.locator(".bifrostcss-kpbtZs")
+                if runStatuses.count() == 0:
+                    lastRunStatus = "Never Executed"
                 else:
-                    status_pos_y = _get_status_box_pos_y(box)
-                    status_text = _get_status_text(page, status_pos_x, status_pos_y)
+                    lastRunStatus = runStatuses.nth(0).inner_text()
+                #HO OTTENUTO IL LAST RUN STATUS DELLA PIPELINE CHE STO ITERANDO
+                pipeline_status_dict["pipeline_name"] = item["pipeline_name"]
+                pipeline_status_dict["status"] = lastRunStatus
+                print("Pipeline: " + str(item["pipeline_name"]) + "; Last Run Status: " + str(lastRunStatus))
+                outputList.append(pipeline_status_dict)
 
-                if status_text == "Action":
-                    status_text = "No Action"
-                if status_text not in valid_statuses:
-                    status_text = "Never Executed"
+    return outputList
 
-                pipeline_status_dict[pipeline_name] = status_text
-                
-            
-
-            # Go to next page
-            page.click("text=Next")
-            page.wait_for_load_state()
-            page.wait_for_timeout(2000)
-
-        browser.close()
-        
-        converted = [
-                {"pipeline_name": pipeline_name, "status": status_text}
-                for pipeline_name, status_text in pipeline_status_dict.items()
-            ]
-    return converted
+#print(scrape_pipeline_status("nttdata", False, False))    #DEBUGGING & TEST

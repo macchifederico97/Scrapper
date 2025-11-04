@@ -1,7 +1,14 @@
 import json
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError
 from datetime import datetime
 
+
+#PIPELINE NAME DONE
+#STATUS
+#START TIME
+#FINISH TIME
+#RUNTIME
+#SCHEDULE DONE
 def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool):
     """
     Extracts full infos from all the pipelines in the system.
@@ -12,25 +19,21 @@ def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool
         page.wait_for_load_state()
         print(f"L'ID della pipeline '{pipelineName}' è: {id_pipeline}")
 
-        if "/pipeline" in page.url:
-            page.evaluate(f"""
-                const path = window.location.pathname.split("pipeline")[0] + "pipelines";
-                const nuovaUrl = path + '/{id_pipeline}/history';
-                window.history.pushState({{}}, '', nuovaUrl);
-            """)
-
-            page.wait_for_timeout(2000)
-
-        
-        schedule = page.locator(".bifrostcss-gSjZro").nth(6).inner_text()
+        page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{id_pipeline}/history")
 
         page.wait_for_load_state()
-        page.wait_for_timeout(2000)     #TEST
+        try:    #FOR QUICK LOAD CHECK
+            # Prova a cliccare sul primo elemento entro 8000 ms (8 secondi) #PER CONTROLLARE SE LA PAGINA E CARICATA
+            page.locator(".bifrostcss-bnFVuH").nth(0).wait_for(state="visible", timeout=8000)
+
+        except TimeoutError:
+            # Se non viene trovato, passa avanti senza fare nulla
+            pass
+
+
 
         if page.locator(".bifrostcss-bnFVuH").count() == 0:     #Handling the case where the pipeline has never been runned
-            page.locator(".bifrostcss-fIrYkC").click()  # Pipeline-history page close
-            page.wait_for_timeout(1000)
-            return "", "", "", "", ""
+            return "", "", "", "Never Executed"
 
         page.locator(".bifrostcss-bnFVuH").nth(0).click()  # last execution
         page.wait_for_timeout(500)
@@ -39,25 +42,25 @@ def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool
         status = page.locator(".bifrostcss-kpbtZs").nth(0).inner_text()
         startTime = page.locator(".bifrostcss-bItxDa").nth(0).inner_text()
         finishTime = page.locator(".bifrostcss-bItxDa").nth(1).inner_text()
-        page.wait_for_timeout(500)
 
-        page.locator(".bifrostcss-fIrYkC").click()  #Pipeline-history page close
-        page.wait_for_timeout(1000)
 
         #CALCOLO IL RUNTIME
         dt_format = "%m/%d/%Y, %I:%M:%S %p %Z"
         start_dt = datetime.strptime(startTime, dt_format)
         finish_dt = datetime.strptime(finishTime, dt_format)
         duration_minutes = (finish_dt - start_dt).total_seconds() / 60.0
+        print(f"{startTime}; {finishTime}; {duration_minutes} minutes; {status}")
 
-        return startTime, finishTime, duration_minutes, schedule, status
+        return startTime, finishTime, duration_minutes, status
 
     outputList = [] #Output list containing pipeline information dict
 
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=headlessPar
-        , args=["--no-sandbox", "--ignore-certificate-errors"])
+        , args=["--no-sandbox", "--ignore-certificate-errors"]
+        #, executable_path="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+        )
         context = browser.new_context(storage_state="state.json", device_scale_factor=1)
         page = context.new_page()
         page.set_viewport_size({"width": 1600, "height": 1200})
@@ -72,13 +75,15 @@ def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool
         filter_pipelines = filter_enabled.lower() == "true" if filter_enabled else False 
             
         for pipeline in pipelines["pipelines"]:
-            print(f"Evaluating pipeline: {pipeline['pipeline_name']} with status {pipeline['status']}")
-            print("---")
-            if(filter_pipelines and pipeline["status"] != "Enabled"):
+            if (filter_pipelines and pipeline["status"] != "Enabled"):
                 continue
+
             else:
+                print(f"Evaluating pipeline: {pipeline['pipeline_name']} with status {pipeline['status']}")
+                print("---")
                 print(f"Extracting info for pipeline: {pipeline['pipeline_name']}")
-                startTime, finishTime, duration_minutes, schedule, status = getPipelineInformations(pipeline["pipeline_name"], pipeline["pipeline_id"])
+                schedule = pipeline["schedule"]
+                startTime, finishTime, duration_minutes, status = getPipelineInformations(pipeline["pipeline_name"], pipeline["pipeline_id"])
                 pipeDict = {"pipeline_name": pipeline["pipeline_name"], "status": status, "start_time": startTime,
                         "finish_time": finishTime, "duration_minutes": duration_minutes, "schedule": schedule}
                 outputList.append(pipeDict)     #Creation of the dict with pipeline information and appended to the output list
@@ -87,4 +92,4 @@ def full_extractor(bifrost_instance: str, filter_enabled: str, headlessPar: bool
         return outputList
 
 
-#print(full_extractor(bifrost_instance="nttdata", filter_enabled="false"))    #TEXT/DEBUGGING
+#print(full_extractor(bifrost_instance="nttdata", filter_enabled="false", headlessPar=False))    #TEXT/DEBUGGING
