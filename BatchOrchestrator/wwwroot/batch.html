@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Batch Dashboard C#</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { text-align: center; }
+    .section { border: 1px solid #ccc; padding: 15px; margin: 10px; border-radius: 8px; width: 300px; display: inline-block; vertical-align: top; }
+    .section input, .section select { width: 100%; margin-top: 5px; margin-bottom: 10px; padding: 5px; }
+    .section button { width: 100%; padding: 8px; }
+    #response { margin-top: 30px; border-top: 1px solid #ccc; padding-top: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+    th input { width: 90%; }
+  </style>
+</head>
+<body>
+<nav style="background-color: #f0f0f0; padding: 10px; border-radius: 6px;">
+  <!--<a href="/" style="margin-right: 20px; font-weight: bold;">API Dashboard</a>
+  <a href="/batch" style="font-weight: bold;">Batch Dashboard</a>-->
+</nav>
+
+
+  <h1>Batch Dashboard</h1>
+<div style="display: flex; gap: 20px;">
+  <div class="section">
+    <label>Endpoint</label>
+    <select id="endpoint" onchange="updateVisibleFields()">
+      <option value="/healthz">healthz</option>
+      <option value="/rerun">rerun</option>
+      <option value="/api/runtime">runtime</option>
+      <option value="/pipelineStatus">pipelineStatus</option>
+      <option value="/api/getID">getID</option>
+      <option value="/api/lastLog">lastLog</option>
+      <option value="/api/pipelineFullExtract">pipelineFullExtract</option>
+      <option value="/api/userStatus">userStatus</option>
+    </select>
+
+    <!--
+    Healthz -> no param
+    Rerun -> pipeline_name_rerun / bifrost_instance
+    Runtime -> pipeline_name / bifrost_instance
+    GetID ->pipeline_name / bifrost_instance / filter
+    Pipeline_status -> filter / bifrost_instance
+    Last_log -> pipeline_name / bifrost_instance
+    Full Extract -> bifrost_instance / filter
+    User Status -> visualfabriq_instance
+    -->
+
+    <label id="label_pipeline_name">pipeline_name</label>
+    <input id="pipeline_name"/>
+
+    <label id="label_bifrost_instance">bifrost_instance</label>
+    <input id="bifrost_instance" />
+    
+    <label><input type="checkbox" id="filter" checked /> filter</label>
+
+    <label id="label_visualfabriq_instance">visualfabriq_instance</label>
+    <input id="visualfabriq_instance" />
+
+    <label id="label_time">Orario (HH:MM)</label>
+    <input id="time" type="time" />
+
+    <label><input type="checkbox" id="active" checked /> Active</label>
+
+    <button onclick="saveConfig()">Salva Configurazione</button>
+  </div>
+    <!-- Log API -->
+<div style="flex: 1; max-height: 500px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+  <h3>API Response</h3>
+  <div id="batchResponses" style="font-family: monospace; font-size: 14px;"></div>
+</div>
+
+<div style="flex: 1; max-height: 500px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+  <h3>Log Batch</h3>
+  <div id="batchLog" style="font-family: monospace; font-size: 14px;"></div>
+  </div>
+</div>
+
+
+  <div id="response">
+    <h3>Configurazioni salvate</h3>
+    <table id="configTable">
+      <thead>
+        <tr>
+          <th>ID<br><input oninput="filterTable(0, this.value)" /></th>
+          <th>Endpoint<br><input oninput="filterTable(1, this.value)" /></th>
+          <th>Orario<br><input oninput="filterTable(2, this.value)" /></th>
+          <th>Parametri<br><input oninput="filterTable(3, this.value)" /></th>
+          <th>Attivo<br><input oninput="filterTable(4, this.value)" /></th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  
+  <script>
+    function updateVisibleFields() {
+      const endpoint = document.getElementById("endpoint").value;
+
+      const visibilityMap = {
+        "/healthz": [],
+        "/rerun": ["pipeline_name", "bifrost_instance"],
+        "/api/runtime": ["pipeline_name", "bifrost_instance"],
+        "/api/getID": ["bifrost_instance", "filter"],
+        "/pipelineStatus": ["bifrost_instance", "filter"],
+        "/api/lastLog": ["pipeline_name", "bifrost_instance"],
+        "/api/pipelineFullExtract": ["bifrost_instance", "filter"],
+        "/api/userStatus": ["visualfabriq_instance"]
+      };
+
+      const allFields = ["pipeline_name", "bifrost_instance", "filter", "visualfabriq_instance"];
+      const visibleFields = visibilityMap[endpoint] || [];
+
+      allFields.forEach(field => {
+        const input = document.getElementById(field);
+        const label = document.getElementById("label_" + field);
+        const checkbox = field === "filter" ? input : null;
+
+        if (visibleFields.includes(field)) {
+          if (label) label.style.display = "";
+          if (input) input.style.display = "";
+        } else {
+          if (label) label.style.display = "none";
+          if (input) input.style.display = "none";
+        }
+      });
+    }
+    function saveConfig() {
+      const endpoint = document.getElementById("endpoint").value;
+
+      const allInputs = {
+        pipeline_name: document.getElementById("pipeline_name").value,
+        bifrost_instance: document.getElementById("bifrost_instance").value,
+        filter: document.getElementById("filter")?.value,
+        visualfabriq_instance: document.getElementById("visualfabriq_instance")?.value
+      };
+
+      // Mappa endpoint → parametri richiesti
+      const endpointParams = {
+        "/healthz": [],
+        "/api/rerun": ["pipeline_name", "bifrost_instance"],
+        "/api/runtime": ["pipeline_name", "bifrost_instance"],
+        "/api/getID": ["bifrost_instance", "filter"],
+        "/api/pipelineStatus": ["bifrost_instance", "filter"],
+        "/api/lastLog": ["pipeline_name", "bifrost_instance"],
+        "/api/pipelineFullExtract": ["bifrost_instance", "filter"],
+        "/api/userStatus": ["visualfabriq_instance"]
+      };
+      
+      const required = endpointParams[endpoint] || [];
+      const params = {};
+      required.forEach(key => {
+        if (allInputs[key]) {
+          params[key] = allInputs[key];
+        }
+      });
+
+      const payload = {
+        endpoint,
+        params,
+        time: document.getElementById("time").value,
+        active: document.getElementById("active").checked
+      };
+      fetch("/batch/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).then(() => loadConfigs());
+    }
+
+    function toggle(id) {
+      fetch("/batch/toggle", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({id})
+      })
+      .then(res => res.json())
+      .then(data => {
+          loadConfigs(); // ricarica la lista
+      });
+    }
+
+
+    function deleteConfig(id) {
+      fetch("/batch/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+      })
+      .then(res => res.ok ? res.json() : Promise.reject(res))
+      .then(data => {
+        loadConfigs();
+      })
+      .catch(err => {
+        console.error("Errore eliminazione:", err);
+        alert("⚠️ Errore: " + err.statusText);
+      });
+
+    }
+
+    function filterTable(colIndex, value) {
+      const rows = document.querySelectorAll("#configTable tbody tr");
+      rows.forEach(row => {
+        const cell = row.cells[colIndex];
+        row.style.display = cell.textContent.toLowerCase().includes(value.toLowerCase()) ? "" : "none";
+      });
+    }
+
+    function runNow(endpoint, params) {
+    const payload = { endpoint, params };
+
+    fetch("/batch/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("batchResponses");
+        const block = document.createElement("div");
+        block.innerHTML = `
+          <strong>${new Date().toLocaleString("it-IT")}</strong><br>
+          <pre>${data.response || data.error}</pre>
+          <hr>`;
+        container.prepend(block);
+      })
+      .catch(err => {
+        console.error("Errore:", err);
+      });
+  }
+
+    function loadConfigs() {
+      fetch("/batch/configs")
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.querySelector("#configTable tbody");
+          tbody.innerHTML = "";
+          data.forEach(id => {
+            if (id.delete === true) return;
+            const params = Object.entries(id.params || {})
+              .map(([k, v]) => `${k}=${v}`).join(", ");
+            const row = document.createElement("tr");
+            const runBtn = document.createElement("button");
+            runBtn.textContent = "▶️ Esegui ora";
+            runBtn.onclick = () => runNow(id.endpoint, id.params);
+
+            const cell = document.createElement("td");
+            cell.appendChild(runBtn);
+            
+            row.innerHTML = `
+            <td>${id.id}</td>
+            <td>${id.endpoint}</td>
+            <td>${id.time}</td>
+            <td>${params}</td>
+            <td>${id.active ? "Activated" : "Deactivated"}</td>
+            <td>
+              <button onclick="toggle('${id.id}')">
+                ${id.active ? "Deactivated" : "Activated"}
+                </button>
+                <button onclick="deleteConfig('${id.id}')">Delete</button>
+                </td>`;
+            //<row.appendChild(cell);
+            tbody.appendChild(row);
+            updateVisibleFields()
+          });
+        });
+    }
+
+    function loadBatchLog() {
+        fetch("/batch/logs")
+            .then(res => res.json())
+            .then(logs => {
+            const logDiv = document.getElementById("batchLog");
+            logDiv.innerHTML = "";
+            logs.forEach(entry => {
+                const line = document.createElement("div");
+                line.textContent = `[${new Date(entry.timestamp).toLocaleTimeString("it-IT", {day: "2-digit",month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit"})}] ${entry.message}`;
+                logDiv.appendChild(line);
+            });
+            });
+        }
+    function loadBatchResponses() {
+        fetch("/batch/responses")
+            .then(res => res.json())
+            .then(data => {
+            const container = document.getElementById("batchResponses");
+            container.innerHTML = "";
+            Object.entries(data)
+            .sort(([idA], [idB]) => idB.localeCompare(idA))
+            .forEach(([id, entry]) => {
+                const block = document.createElement("div");
+                block.innerHTML = `
+                  <strong>[${id}]</strong> ${new Date(entry.timestamp).toLocaleString("it-IT", {
+                    day: "2-digit", month: "2-digit", year: "numeric",
+                    hour: "2-digit", minute: "2-digit", second: "2-digit"
+                  })}<br>
+                  <pre>${entry.response}</pre>
+                  <hr>`;
+                container.appendChild(block);
+              });
+
+            });
+        }
+
+
+
+    setInterval(loadBatchLog, 30000);
+    loadBatchLog();
+        
+    setInterval(loadBatchResponses, 30000); // ogni 30 secondi
+    loadBatchResponses(); // subito al caricamento
+
+
+
+    loadConfigs();
+  </script>
+
+</body>
+</html>

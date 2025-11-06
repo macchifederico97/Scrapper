@@ -2,9 +2,10 @@
   {
     "endpoint": "/healthz",
     "params": {},
-    "time": "00:29",
+    "time": "15:25",
     "active": true,
-    "id": "id_00001"
+    "id": "id_00001",
+    "delete": true
   },
   {
     "endpoint": "/api/runtime",
@@ -12,71 +13,66 @@
       "pipeline_name": "Demand - Export forecast",
       "bifrost_instance": "nttdata"
     },
-    "time": "01:34",
+    "time": "16:10",
     "active": true,
     "id": "id_00002"
   },
   {
-    "endpoint": "/healthz",
-    "params": {},
-    "time": "01:52",
+    "endpoint": "/api/runtime",
+    "params": {
+      "pipeline_name": "Demand - Export forecast",
+      "bifrost_instance": "nttdata"
+    },
+    "time": "16:14",
     "active": true,
     "id": "id_00003"
   },
   {
     "endpoint": "/healthz",
     "params": {},
-    "time": "01:54",
+    "time": "16:16",
     "active": true,
     "id": "id_00004"
   },
   {
     "endpoint": "/healthz",
     "params": {},
-    "time": "01:56",
+    "time": "16:18",
     "active": true,
     "id": "id_00005"
   },
   {
     "endpoint": "/healthz",
     "params": {},
-    "time": "01:58",
+    "time": "16:21",
     "active": true,
     "id": "id_00006"
   },
   {
-    "endpoint": "/healthz",
-    "params": {},
-    "time": "02:05",
+    "endpoint": "/api/runtime",
+    "params": {
+      "pipeline_name": "Demand - Export forecast",
+      "bifrost_instance": "nttdata"
+    },
+    "time": "16:22",
     "active": true,
     "id": "id_00007"
   },
   {
-    "endpoint": "/healthz",
-    "params": {},
-    "time": "02:05",
+    "endpoint": "/api/runtime",
+    "params": {
+      "pipeline_name": "Demand - Export forecast",
+      "bifrost_instance": "nttdata"
+    },
+    "time": "16:58",
     "active": true,
     "id": "id_00008"
   },
   {
     "endpoint": "/healthz",
     "params": {},
-    "time": "02:05",
+    "time": "16:58",
     "active": true,
     "id": "id_00009"
-  },
-  {
-    "endpoint": "/healthz",
-    "params": {},
-    "time": "02:05",
-    "active": true,
-    "id": "id_00010"
-  },
-  {
-    "endpoint": "/healthz",
-    "params": {},
-    "time": "04:14",
-    "active": true,
-    "id": "id_00011"
   }
 ]
