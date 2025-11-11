@@ -116,28 +116,28 @@ def batch_run():
             case "/healthz":
                 return {"status": "ok"}
             case "/api/rerun":
-                return rerun_pipeline_func(params)
+                return rerun_pipeline_func(params['pipeline_name'], params['bifrost_instance'])
             case "/api/moveFileRerun":
-                return complete_rerun_pipeline_func(params)
+                return complete_rerun_pipeline_func(params['pipeline_name'], params['bifrost_instance'])
             case "/api/runtime":
-                return runtime_pipeline_func(params)
+                return runtime_pipeline_func(params['pipeline_name'], params['bifrost_instance'])
             case "/api/getID":
-                return getID_pipeline_func(params)
+                return getID_pipeline_func(params['bifrost_instance'], params['filter'])
             case "/api/pipelineStatus":
-                return status_pipeline_func(params)
+                return status_pipeline_func(params['bifrost_instance'], params['filter'])
             case "/api/lastLog":
-                return log_pipeline_func(params)
+                return log_pipeline_func(params['pipeline_name'], params['bifrost_instance'])
             case "/api/pipelineFullExtract":
-                return fullExtract_pipeline_func(params)
+                return fullExtract_pipeline_func(params['bifrost_instance'], params['filter'])
             #doppio?? #TODO
             case "/api/pipelineUpdateId":
-                return getID_pipeline_func(params)
+                return getID_pipeline_func(params['bifrost_instance'], params['filter'])
             case "/api/pipelineIncreaseTimeout":
-                return increaseTimeout_pipeline_func(params)
+                return increaseTimeout_pipeline_func(params['pipeline_name'], params['bifrost_instance'], params['delta_increase'], params['processing_step_nr'])
             case "/api/pipelineIncreaseJobSize":
-                return increaseJobSize_pipeline_func(params)
+                return increaseJobSize_pipeline_func(params['pipeline_name'], params['bifrost_instance'], params['processing_step_nr'])
             case "/api/userStatus":
-                return extract_userStatus_func(params)
+                return extract_userStatus_func(params['visualfabriq_instance'])
             case _:
                 return jsonify({"error": f"Unknown endpoint: {endpoint}"}), 400
     except Exception as e:
@@ -153,37 +153,38 @@ def healthz():
 #Call to function: pipeline_rerun
 @app.post("/api/rerun")
 def pipeline_rerun():
-    rerun_pipeline_func(request)
+    rerun_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"))
     
 # Call to function: pipeline_rerun
 @app.post("/api/moveFileRerun")
 def pipeline_complete_rerun():
-    complete_rerun_pipeline_func(request)
+    complete_rerun_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"))
 
 #Call to function: pipeline_runtime
 @app.get("/api/runtime")
 def pipeline_runtime():
-    runtime_pipeline_func(request)
+    print("def")
+    runtime_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"))
 
 #Call to function: pipeline_getID
 @app.get("/api/getID")
 def pipeline_getID():
-    getID_pipeline_func(request)
+    getID_pipeline_func(request.args.get("bifrost_instance"), request.args.get("filter"))
     
 #Call to function: pipeline_status
 @app.get("/api/pipelineStatus")
 def pipeline_status():
-    status_pipeline_func(request)
+    status_pipeline_func(request.args.get("bifrost_instance"), request.args.get("status_filter"))
     
 # Call to function: pipeline_log
 @app.get("/api/lastLog")
 def pipeline_log():
-    log_pipeline_func(request)
+    log_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"))
 
 # Call to function: pipeline_fullExtract
 @app.get("/api/pipelineFullExtract")
 def pipeline_fullExtract():
-    fullExtract_pipeline_func(request)
+    fullExtract_pipeline_func(request.args.get("bifrost_instance"), request.args.get("filter"))
 
 # Call to function: pipeline_update_Id, Manual Pipeline Id Update
 @app.get("/api/pipelineUpdateId")
@@ -206,26 +207,24 @@ def pipeline_update_id():
 # Call to function: pipeline_increase_timeout
 @app.post("/api/pipelineIncreaseTimeout")
 def pipeline_increaseTimeout():
-    increaseTimeout_pipeline_func(request)
+    increaseTimeout_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"), request.args.get("delta_increase"),request.args.get("processing_step_nr"))
     
 # Call to function: pipeline_increase_job_size
 @app.post("/api/pipelineIncreaseJobSize")
 def pipeline_increaseJobSize():
-    increaseJobSize_pipeline_func(request)
+    increaseJobSize_pipeline_func(request.args.get(request.args.get("pipeline_name")), request.args.get("bifrost_instance"), request.args.get("processing_step_nr"))
 
 # Call to function: userStatus_extract
 @app.get("/api/userStatus")
 def userStatus_extract():
-    extract_userStatus_func(request)
+    extract_userStatus_func(request.args.get("visualfabriq_instance"))
 
 
 #FUNCION
 
 #"/api/rerun"
-def rerun_pipeline_func(request):
+def rerun_pipeline_func(pipeline_name, bifrost_instance):
     print("pipeline_rerun: Starting")
-    pipeline_name = request.args.get("pipeline_name")
-    bifrost_instance = request.args.get("bifrost_instance")
     if not pipeline_name or not bifrost_instance:
         return jsonify({"error": "pipeline_id and bifrost_instance required"}), 400
     try:
@@ -236,10 +235,8 @@ def rerun_pipeline_func(request):
         return jsonify({"error": str(e)}), 500
 
 #/api/moveFileRerun
-def complete_rerun_pipeline_func(request):
+def complete_rerun_pipeline_func(pipeline_name, bifrost_instance):
     print("pipeline_moveFileRerun: Starting")
-    pipeline_name = request.args.get("pipeline_name")
-    bifrost_instance = request.args.get("bifrost_instance")
     if not pipeline_name or not bifrost_instance:
         return jsonify({"error": "pipeline_moveFileRerun: pipeline_id and bifrost_instance required"}), 400
     try:
@@ -250,10 +247,10 @@ def complete_rerun_pipeline_func(request):
         return jsonify({"error": "pipeline_moveFileRerun: "+str(e)}), 500 
 
 #"/api/runtime"   
-def runtime_pipeline_func(request):
+def runtime_pipeline_func(pipeline_name, bifrost_instance):
     print("pipeline_runtime: Starting")
-    pipeline_name = request.args.get("pipeline_name")
-    bifrost_instance = request.args.get("bifrost_instance")
+    print(pipeline_name)
+    print(bifrost_instance)
     if not pipeline_name or not bifrost_instance:
         return jsonify({"error": "pipeline_name and bifrost_instance required"}), 400
     try:
@@ -264,10 +261,8 @@ def runtime_pipeline_func(request):
         return jsonify({"error": str(e)}), 500
 
 #"/api/getID"
-def getID_pipeline_func(request):
+def getID_pipeline_func(bifrost_instance, filterEnabled):
     print("pipeline_runtime: Starting")
-    bifrost_instance = request.args.get("bifrost_instance")
-    filterEnabled = request.args.get("filter")
     if not bifrost_instance:
         return jsonify({"error": "bifrost_instance required"}), 400
     try:
@@ -278,10 +273,7 @@ def getID_pipeline_func(request):
         return jsonify({"error": str(e)}), 500
 
 #"/api/pipelineStatus"
-def status_pipeline_func(request):
-    print("pipeline_Status: Starting")
-    bifrost_instance = request.args.get("bifrost_instance")
-    status_filter = request.args.get("status_filter")
+def status_pipeline_func(bifrost_instance, status_filter):
     if not status_filter or not bifrost_instance:
         return jsonify({"error": "status_filter and bifrost_instance required"}), 400
     try:
@@ -292,10 +284,8 @@ def status_pipeline_func(request):
         return jsonify({"error": str(e)}), 500
 
 #"/api/lastLog"
-def log_pipeline_func(request):
+def log_pipeline_func(pipeline_name, bifrost_instance):
     print("pipeline_log: Starting")
-    pipeline_name = request.args.get("pipeline_name")
-    bifrost_instance = request.args.get("bifrost_instance")
     if not pipeline_name or not bifrost_instance:
         return jsonify({"error": "pipeline_name and bifrost_instance required"}), 400
     try:
@@ -306,10 +296,8 @@ def log_pipeline_func(request):
         return jsonify({"error": str(e)}), 500
 
 #"/api/pipelineFullExtract"
-def fullExtract_pipeline_func(request):
+def fullExtract_pipeline_func(bifrost_instance, status_filter):
     print("pipeline_fullExtract: Starting")
-    bifrost_instance = request.args.get("bifrost_instance")
-    status_filter = request.args.get("status_filter")
     if not status_filter or not bifrost_instance:
         return jsonify({"error": "status_filter and bifrost_instance required"}), 400
     try:
@@ -320,12 +308,8 @@ def fullExtract_pipeline_func(request):
         return jsonify({"error": str(e)}), 500
 
 #"/api/pipelineIncreaseTimeout"
-def increaseTimeout_pipeline_func(request):
+def increaseTimeout_pipeline_func(pipeline_name, bifrost_instance, delta_increase, processing_step_nr):
     print("pipeline_increase_timeout: Starting")
-    pipeline_name = request.args.get("pipeline_name")
-    bifrost_instance = request.args.get("bifrost_instance")
-    delta_increase = request.args.get("delta_increase")
-    processing_step_nr = request.args.get("processing_step_nr")
     if not pipeline_name or not bifrost_instance or not delta_increase or not processing_step_nr:
         return jsonify({"error": "pipeline_name, bifrost_instance, delta_increase and processing_step_nr required"}), 400
     try:
@@ -336,11 +320,8 @@ def increaseTimeout_pipeline_func(request):
         return jsonify({"error": str(e)}), 500
 
 #"/api/pipelineIncreaseJobSize"
-def increaseJobSize_pipeline_func(request):
+def increaseJobSize_pipeline_func(pipeline_name, bifrost_instance, processing_step_nr):
     print("pipeline_increase_job_size: Starting")
-    pipeline_name = request.args.get("pipeline_name")
-    bifrost_instance = request.args.get("bifrost_instance")
-    processing_step_nr = request.args.get("processing_step_nr")
     if not pipeline_name or not bifrost_instance or not processing_step_nr:
         return jsonify(
             {"error": "pipeline_name, bifrost_instance and processing_step_nr required"}), 400
@@ -352,9 +333,8 @@ def increaseJobSize_pipeline_func(request):
         return jsonify({"error": str(e)}), 500
 
 #"/api/userStatus"
-def extract_userStatus_func(request):
+def extract_userStatus_func(visualfabriq_instance):
     print("userStatus_extract: Starting")
-    visualfabriq_instance = request.args.get("visualfabriq_instance")
 
     if not visualfabriq_instance:
         visualfabriq_instance = ""  #NON E PIU NECESSARIO PASSARE VISUALFABRIQ_INSTANCE COME PARAMETRO

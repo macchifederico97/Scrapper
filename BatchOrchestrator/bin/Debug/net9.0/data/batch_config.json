@@ -2,77 +2,557 @@
   {
     "endpoint": "/healthz",
     "params": {},
-    "time": "15:25",
+    "time": "15:03",
     "active": true,
     "id": "id_00001",
     "delete": true
   },
   {
+    "endpoint": "/api/rerun",
+    "params": {
+      "pipeline_name": "Re-execute test",
+      "bifrost_instance": "nttdata"
+    },
+    "time": "15:05",
+    "active": true,
+    "id": "id_00002",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/rerun",
+    "params": {
+      "pipeline_name": "Re-execute test",
+      "bifrost_instance": "nttdata"
+    },
+    "time": "15:08",
+    "active": true,
+    "id": "id_00003",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/runtime",
+    "params": {
+      "pipeline_name": "Re-execute test",
+      "bifrost_instance": "nttdata"
+    },
+    "time": "15:09",
+    "active": true,
+    "id": "id_00004",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": "true"
+    },
+    "time": "15:10",
+    "active": true,
+    "id": "id_00005",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": "true"
+    },
+    "time": "15:11",
+    "active": true,
+    "id": "id_00006",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/lastLog",
+    "params": {
+      "pipeline_name": "Re-execute test",
+      "bifrost_instance": "nttdata"
+    },
+    "time": "15:24",
+    "active": true,
+    "id": "id_00007",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineFullExtract",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": "true"
+    },
+    "time": "15:26",
+    "active": true,
+    "id": "id_00008",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/userStatus",
+    "params": {
+      "visualfabriq_instance": "nttdata"
+    },
+    "time": "15:30",
+    "active": true,
+    "id": "id_00009",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/userStatus",
+    "params": {
+      "visualfabriq_instance": "nttdata"
+    },
+    "time": "15:31",
+    "active": true,
+    "id": "id_00010",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": "true"
+    },
+    "time": "11:11",
+    "active": true,
+    "id": "id_00011",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": "true"
+    },
+    "time": "11:11",
+    "active": true,
+    "id": "id_00012",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": "true"
+    },
+    "time": "11:11",
+    "active": true,
+    "id": "id_00013",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "filter": "true"
+    },
+    "time": "11:11",
+    "active": true,
+    "id": "id_00014",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "filter": "true"
+    },
+    "time": "11:11",
+    "active": true,
+    "id": "id_00015",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": "true"
+    },
+    "time": "11:11",
+    "active": true,
+    "id": "id_00016",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": "true"
+    },
+    "time": "11:11",
+    "active": true,
+    "id": "id_00017",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/runtime",
+    "params": {},
+    "time": "",
+    "active": true,
+    "id": "id_00018",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "filter": "true"
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00019",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "filter": "true"
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00020",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "filter": "true"
+    },
+    "time": "",
+    "active": false,
+    "id": "id_00021",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "filter": true
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00022",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {},
+    "time": "",
+    "active": true,
+    "id": "id_00023",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {},
+    "time": "",
+    "active": true,
+    "id": "id_00024",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "filter": true
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00025",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {},
+    "time": "",
+    "active": true,
+    "id": "id_00026",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "filter": true
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00027",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {},
+    "time": "",
+    "active": true,
+    "id": "id_00028",
+    "delete": true
+  },
+  {
+    "endpoint": "/healthz",
+    "params": {},
+    "time": "",
+    "active": true,
+    "id": "id_00029",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": true
+    },
+    "time": "11:11",
+    "active": true,
+    "id": "id_00030",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata"
+    },
+    "time": "11:11",
+    "active": true,
+    "id": "id_00031",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": true
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00032",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata"
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00033",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata"
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00034",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "filter": true
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00035",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {},
+    "time": "",
+    "active": true,
+    "id": "id_00036",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata"
+    },
+    "time": "11:01",
+    "active": true,
+    "id": "id_00037",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "filter": true
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00038",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": true
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00039",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata"
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00040",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata"
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00041",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata"
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00042",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": true
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00043",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata"
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00044",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "filter": true
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00045",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "",
+      "filter": true
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00046",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "",
+      "filter": false
+    },
+    "time": "",
+    "active": true,
+    "id": "id_00047",
+    "delete": true
+  },
+  {
+    "endpoint": "/api/pipelineStatus",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": false
+    },
+    "time": "11:11",
+    "active": true,
+    "id": "id_00048"
+  },
+  {
+    "endpoint": "/api/getID",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": false
+    },
+    "time": "15:53",
+    "active": true,
+    "id": "id_00049"
+  },
+  {
+    "endpoint": "/api/getID",
+    "params": {
+      "bifrost_instance": "nttdata",
+      "filter": true
+    },
+    "time": "11:11",
+    "active": true,
+    "id": "id_00050"
+  },
+  {
+    "endpoint": "/api/getID",
+    "params": {
+      "pipeline_name": "Demand - Export forecast",
+      "bifrost_instance": "nttdata",
+      "filter": true
+    },
+    "time": "15:58",
+    "active": true,
+    "id": "id_00051"
+  },
+  {
     "endpoint": "/api/runtime",
     "params": {
       "pipeline_name": "Demand - Export forecast",
       "bifrost_instance": "nttdata"
     },
-    "time": "16:10",
+    "time": "15:58",
     "active": true,
-    "id": "id_00002"
+    "id": "id_00052"
   },
   {
-    "endpoint": "/api/runtime",
+    "endpoint": "/api/getID",
     "params": {
       "pipeline_name": "Demand - Export forecast",
-      "bifrost_instance": "nttdata"
+      "bifrost_instance": "nttdata",
+      "filter": true
     },
-    "time": "16:14",
+    "time": "16:01",
     "active": true,
-    "id": "id_00003"
+    "id": "id_00053"
   },
   {
-    "endpoint": "/healthz",
-    "params": {},
-    "time": "16:16",
-    "active": true,
-    "id": "id_00004"
-  },
-  {
-    "endpoint": "/healthz",
-    "params": {},
-    "time": "16:18",
-    "active": true,
-    "id": "id_00005"
-  },
-  {
-    "endpoint": "/healthz",
-    "params": {},
-    "time": "16:21",
-    "active": true,
-    "id": "id_00006"
-  },
-  {
-    "endpoint": "/api/runtime",
+    "endpoint": "/api/getID",
     "params": {
       "pipeline_name": "Demand - Export forecast",
-      "bifrost_instance": "nttdata"
+      "bifrost_instance": "nttdata",
+      "filter": true
     },
-    "time": "16:22",
+    "time": "16:05",
     "active": true,
-    "id": "id_00007"
+    "id": "id_00054"
   },
   {
-    "endpoint": "/api/runtime",
+    "endpoint": "/api/getID",
     "params": {
       "pipeline_name": "Demand - Export forecast",
-      "bifrost_instance": "nttdata"
+      "bifrost_instance": "nttdata",
+      "filter": true
     },
-    "time": "16:58",
+    "time": "16:07",
     "active": true,
-    "id": "id_00008"
-  },
-  {
-    "endpoint": "/healthz",
-    "params": {},
-    "time": "16:58",
-    "active": true,
-    "id": "id_00009"
+    "id": "id_00055"
   }
 ]
