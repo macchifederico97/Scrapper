@@ -4,6 +4,9 @@ using System.Timers;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
+using System.Text.Json.Nodes;
+using System.Runtime.InteropServices;
 
 namespace BatchOrchestrator.Services
 {
@@ -16,11 +19,19 @@ namespace BatchOrchestrator.Services
         private readonly string _logPath = "data/batch_log.json";
         private readonly string _responsePath = "data/batch_response.json";
         private static readonly SemaphoreSlim _fileLock = new SemaphoreSlim(1, 1);
-        public BatchScheduler(ILogger<BatchScheduler> logger, IHttpClientFactory httpClientFactory)
+        private readonly BatchReportMailer _mailer;
+        private DateTime _lastEmailSent = DateTime.MinValue;
+        private readonly BatchResponseRepository _responseRepo;
+        private static readonly SemaphoreSlim _fileLock2 = new(1, 1);
+
+        public BatchScheduler(ILogger<BatchScheduler> logger, IHttpClientFactory httpClientFactory, BatchReportMailer mailer, BatchResponseRepository responseRepo)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _mailer = mailer;
+            _responseRepo = responseRepo;
         }
+
 
         public class BatchConfig
         {
@@ -35,7 +46,7 @@ namespace BatchOrchestrator.Services
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Batch scheduler started.");
-            
+            BatchResponseRepository sqlDB = new BatchResponseRepository();
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -62,20 +73,22 @@ namespace BatchOrchestrator.Services
                     {
                         continue;
                     }
-                    tasks.Add(Task.Run(async () =>
+                    _ = Task.Run(async () =>
                     {
                         try
                         {
                             var id = config["id"].ToString();
-                            var endpoint = config["endpoint"].ToString();
+                            var endpoint = config["endpoint"].ToString();                                                       
 
                             // ✅ Estrai "params" come dizionario
                             var paramElement = (JsonElement)config["params"];
+                            Console.WriteLine(paramElement);
                             var parameters = JsonSerializer.Deserialize<Dictionary<string, string>>(paramElement.GetRawText());
 
                             LogBatchEvent($"Execution {id} → {endpoint} con {paramElement}");
 
                             var client = _httpClientFactory.CreateClient();
+                            client.Timeout = TimeSpan.FromMinutes(5);
                             var url = $"http://localhost:8000/batch/run";
                             var payload = new
                             {
@@ -84,20 +97,32 @@ namespace BatchOrchestrator.Services
                                 @params = parameters
                             };
                             var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
-                            var response = await client.PostAsync(url, content, stoppingToken);
+                            var response = await client.PostAsync(url, content);
                             var responseText = await response.Content.ReadAsStringAsync();
                             await SaveBatchResponseAsync(id, responseText);
+                            await sqlDB.SaveAsync(id, responseText);
                             _logger.LogInformation($"[{id}] {endpoint} → {response.StatusCode}");
                         }
                         catch (Exception ex)
                         {
                             _logger.LogError($"[{config["id"]}] Errore: {ex.Message}");
                         }
-                    }));
+                    });
                 }
-
-                await Task.WhenAll(tasks);
+                if (DateTime.Now.Hour == 18 && _lastEmailSent.Date != DateTime.Today)
+                {
+                    try
+                    {
+                        await _mailer.SendDailyBatchReportEmailAsync();
+                        _lastEmailSent = DateTime.Today;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Errore invio email: {ex.Message}");
+                    }
+                }
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
+                
             }
         }
 
@@ -109,10 +134,10 @@ namespace BatchOrchestrator.Services
             return JsonSerializer.Deserialize<List<Dictionary<string, object>>>(json);
         }
 
-        
+
         private async Task SaveBatchResponseAsync(string id, string responseText)
         {
-            await _fileLock.WaitAsync();
+            await _fileLock2.WaitAsync();
 
             try
             {
@@ -121,17 +146,73 @@ namespace BatchOrchestrator.Services
                 if (File.Exists(_responsePath))
                 {
                     var json = await File.ReadAllTextAsync(_responsePath);
-                    responses = JsonSerializer.Deserialize<Dictionary<string, object>>(json) ?? new();
+                    try
+                    {
+                        responses = JsonSerializer.Deserialize<Dictionary<string, object>>(json) ?? new();
+                    }
+                    catch
+                    {
+                        Console.WriteLine("[SaveBatchResponse] Il file esistente non è un dizionario JSON valido. Verrà sovrascritto.");
+                        responses = new();
+                    }
                 }
 
+                JsonElement element;
+                object parsedResponse;
+                Dictionary<string, string> pipelineMap = new();
+
+
+                try
+                {
+                    element = JsonSerializer.Deserialize<JsonElement>(responseText);
+
+                    if (element.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var item in element.EnumerateArray())
+                        {
+                            if (item.ValueKind == JsonValueKind.Object &&
+                                item.TryGetProperty("pipeline_name", out var nameProp) &&
+                                item.TryGetProperty("status", out var statusProp))
+                            {
+                                var name = nameProp.GetString();
+                                var status = statusProp.GetString();
+
+                                if (!string.IsNullOrEmpty(name))
+                                    pipelineMap[name] = status ?? "";
+                            }
+                        }
+
+                        parsedResponse = JsonSerializer.SerializeToNode(pipelineMap); // 👈 diventa JsonObject
+                    }
+                    else
+                    {
+                        parsedResponse = JsonNode.Parse(element.GetRawText());
+                    }
+                }
+                catch
+                {
+                    parsedResponse = responseText; // fallback: salva come stringa raw
+                }
                 responses[id] = new
                 {
                     timestamp = DateTime.Now.ToString("o"),
-                    response = responseText
+                    response = parsedResponse
                 };
-
                 var updated = JsonSerializer.Serialize(responses, new JsonSerializerOptions { WriteIndented = true });
-                await File.WriteAllTextAsync(_responsePath, updated);
+
+                const int maxRetries = 3;
+                for (int i = 0; i < maxRetries; i++)
+                {
+                    try
+                    {
+                        await File.WriteAllTextAsync(_responsePath, updated);
+                        break;
+                    }
+                    catch (IOException) when (i < maxRetries - 1)
+                    {
+                        await Task.Delay(200);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -139,9 +220,10 @@ namespace BatchOrchestrator.Services
             }
             finally
             {
-                _fileLock.Release();
+                _fileLock2.Release();
             }
         }
+
 
         private void LogBatchEvent(string message)
         {

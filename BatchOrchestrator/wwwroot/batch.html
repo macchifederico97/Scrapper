@@ -27,9 +27,9 @@
     <label>Endpoint</label>
     <select id="endpoint" onchange="updateVisibleFields()">
       <option value="/healthz">healthz</option>
-      <option value="/rerun">rerun</option>
+      <option value="/api/rerun">rerun</option>
       <option value="/api/runtime">runtime</option>
-      <option value="/pipelineStatus">pipelineStatus</option>
+      <option value="/api/pipelineStatus">pipelineStatus</option>
       <option value="/api/getID">getID</option>
       <option value="/api/lastLog">lastLog</option>
       <option value="/api/pipelineFullExtract">pipelineFullExtract</option>
@@ -53,7 +53,8 @@
     <label id="label_bifrost_instance">bifrost_instance</label>
     <input id="bifrost_instance" />
     
-    <label><input type="checkbox" id="filter" checked /> filter</label>
+    <label id="label_filter">
+      <input type="checkbox" id="filter" checked /> filter</label>
 
     <label id="label_visualfabriq_instance">visualfabriq_instance</label>
     <input id="visualfabriq_instance" />
@@ -101,10 +102,10 @@
 
       const visibilityMap = {
         "/healthz": [],
-        "/rerun": ["pipeline_name", "bifrost_instance"],
+        "/api/rerun": ["pipeline_name", "bifrost_instance"],
         "/api/runtime": ["pipeline_name", "bifrost_instance"],
-        "/api/getID": ["bifrost_instance", "filter"],
-        "/pipelineStatus": ["bifrost_instance", "filter"],
+        "/api/getID": ["pipeline_name","bifrost_instance", "filter"],
+        "/api/pipelineStatus": ["bifrost_instance", "filter"],
         "/api/lastLog": ["pipeline_name", "bifrost_instance"],
         "/api/pipelineFullExtract": ["bifrost_instance", "filter"],
         "/api/userStatus": ["visualfabriq_instance"]
@@ -127,13 +128,14 @@
         }
       });
     }
+
     function saveConfig() {
       const endpoint = document.getElementById("endpoint").value;
 
       const allInputs = {
         pipeline_name: document.getElementById("pipeline_name").value,
         bifrost_instance: document.getElementById("bifrost_instance").value,
-        filter: document.getElementById("filter")?.value,
+        filter: document.getElementById("filter").checked.toString(),
         visualfabriq_instance: document.getElementById("visualfabriq_instance")?.value
       };
 
@@ -142,7 +144,7 @@
         "/healthz": [],
         "/api/rerun": ["pipeline_name", "bifrost_instance"],
         "/api/runtime": ["pipeline_name", "bifrost_instance"],
-        "/api/getID": ["bifrost_instance", "filter"],
+        "/api/getID": ["pipeline_name","bifrost_instance", "filter"],
         "/api/pipelineStatus": ["bifrost_instance", "filter"],
         "/api/lastLog": ["pipeline_name", "bifrost_instance"],
         "/api/pipelineFullExtract": ["bifrost_instance", "filter"],
@@ -150,12 +152,16 @@
       };
       
       const required = endpointParams[endpoint] || [];
+      console.log(required)
       const params = {};
       required.forEach(key => {
-        if (allInputs[key]) {
+        if (key in allInputs) {
+          console.log(allInputs[key])
           params[key] = allInputs[key];
         }
       });
+
+
 
       const payload = {
         endpoint,
@@ -232,6 +238,7 @@
   }
 
     function loadConfigs() {
+      updateVisibleFields()
       fetch("/batch/configs")
         .then(res => res.json())
         .then(data => {
@@ -296,7 +303,7 @@
                     day: "2-digit", month: "2-digit", year: "numeric",
                     hour: "2-digit", minute: "2-digit", second: "2-digit"
                   })}<br>
-                  <pre>${entry.response}</pre>
+                  <pre>${JSON.stringify(entry.response, null, 2)}</pre>
                   <hr>`;
                 container.appendChild(block);
               });
@@ -304,15 +311,11 @@
             });
         }
 
-
-
     setInterval(loadBatchLog, 30000);
     loadBatchLog();
         
     setInterval(loadBatchResponses, 30000); // ogni 30 secondi
     loadBatchResponses(); // subito al caricamento
-
-
 
     loadConfigs();
   </script>
