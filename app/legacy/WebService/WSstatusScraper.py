@@ -30,30 +30,76 @@ def scrape_pipeline_status(bifrost_instance: str, filter_enabled: bool, headless
         with open(f"client/{bifrost_instance}/pipeline.json", "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        for item in data["pipelines"]:  #ITERO PER TUTTE LE PIPELINE PRESENTI NEL DB
-            pipeline_status_dict = {}   #CREO IL DICT DOVE SALVARE LE INFO DELLA PIPELINE
-            pipelineStatus = item["status"]
-            if (pipelineStatus == "Enabled" and filter_enabled == True) or filter_enabled == False:
-                pipeline_id = item["pipeline_id"]
-                page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{pipeline_id}/history")
-                page.wait_for_load_state()
-                try:
-                    # Prova a cliccare sul primo elemento entro 8000 ms (8 secondi) #PER CONTROLLARE SE LA PAGINA E CARICATA
-                    page.locator(".bifrostcss-bnFVuH").nth(0).wait_for(state="visible", timeout=8000)
+        # Go to the page
+        page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines")
+        page.wait_for_timeout(20000)
+        page.wait_for_load_state()
 
-                except TimeoutError:
-                    # Se non viene trovato, passa avanti senza fare nulla
-                    pass
-                runStatuses = page.locator(".bifrostcss-kpbtZs")
-                if runStatuses.count() == 0:
-                    lastRunStatus = "Never Executed"
+        pipeline_status_dict = {}   #CREO IL DICT DOVE SALVARE LE INFO DELLA PIPELINE
+        checkpipelineNames = []  #FUNCTION OUTPUT CHECK LIST
+        exit_loop = False
+        
+        element_list=[]
+        for item in data["pipelines"]:
+                if(str(filter_enabled).lower() == "true"):
+                    if(item["status"] == "Enabled"):
+                        element_list.append(item["pipeline_name"])
                 else:
-                    lastRunStatus = runStatuses.nth(0).inner_text()
-                #HO OTTENUTO IL LAST RUN STATUS DELLA PIPELINE CHE STO ITERANDO
-                pipeline_status_dict["pipeline_name"] = item["pipeline_name"]
-                pipeline_status_dict["status"] = lastRunStatus
-                print("Pipeline: " + str(item["pipeline_name"]) + "; Last Run Status: " + str(lastRunStatus))
-                outputList.append(pipeline_status_dict)
+                    element_list.append(item["pipeline_name"])
+
+        while not exit_loop:
+            elements_name = page.locator(".bifrostcss-eXwpzm")
+            elements_history = page.locator(".bifrostcss-hDzPRB")
+
+            count = elements_name.count()
+            if count == 0:
+                break
+            
+            first_pipeline_name = elements_name.nth(0).inner_text()
+            print(first_pipeline_name)
+            if first_pipeline_name in checkpipelineNames:
+                break  # Already visited this page
+
+            for i in range(count):  #TO CHECK, FASTER
+                pipeline_status_dict = {}
+                print("---------")
+                element_name = elements_name.nth(i).inner_text()
+                print(element_name)
+                if(element_name in element_list):
+                    element_history = elements_history.nth(i).locator("svg").nth(0).get_attribute("class")
+                    #Green
+                    if(element_history == "bifrostcss-dSdRKl"): 
+                        pipeline_status_dict["pipeline_name"] = element_name
+                        pipeline_status_dict["status"] = "Successful"
+                    #Blue
+                    else:
+                        if(element_history == "bifrostcss-fuPzxl"):
+                            pipeline_status_dict["pipeline_name"] = element_name
+                            pipeline_status_dict["status"] = "No Action"
+                    #Red
+                        else: 
+                            if(element_history == "bifrostcss-hBAxAh"):
+                                path = elements_history.nth(i).locator("svg").nth(0).locator("path").nth(0).get_attribute("d")
+                                #!
+                                if(path.startswith("M12.257")):
+                                    pipeline_status_dict["pipeline_name"] = element_name
+                                    pipeline_status_dict["status"] = "Failed"
+                                #X
+                                if(path.startswith("M12.7523")):
+                                    pipeline_status_dict["pipeline_name"] = element_name
+                                    pipeline_status_dict["status"] = "Stopped"
+                            else: 
+                                pipeline_status_dict["pipeline_name"] = element_name
+                                pipeline_status_dict["status"] = "Never Execute"
+
+                    print(pipeline_status_dict["status"])
+                    checkpipelineNames.append(element_name)
+                    outputList.append(pipeline_status_dict)
+
+            # Go to next page
+            page.click("text=Next")
+            page.wait_for_load_state()
+            page.wait_for_timeout(2000)
 
     return outputList
 
