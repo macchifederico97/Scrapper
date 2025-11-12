@@ -183,7 +183,7 @@ def pipeline_log():
 # Call to function: pipeline_fullExtract
 @app.get("/api/pipelineFullExtract")
 def pipeline_fullExtract():
-    return fullExtract_pipeline_func(request.args.get("bifrost_instance"), request.args.get("filter"))
+    return fullExtract_pipeline_func(request.args.get("bifrost_instance"), request.args.get("status_filter"))
 
 # Call to function: pipeline_update_Id, Manual Pipeline Id Update
 @app.get("/api/pipelineUpdateId")
