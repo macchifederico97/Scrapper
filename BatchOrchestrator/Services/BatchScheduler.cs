@@ -82,7 +82,6 @@ namespace BatchOrchestrator.Services
 
                             // ✅ Estrai "params" come dizionario
                             var paramElement = (JsonElement)config["params"];
-                            Console.WriteLine(paramElement);
                             var parameters = JsonSerializer.Deserialize<Dictionary<string, string>>(paramElement.GetRawText());
 
                             LogBatchEvent($"Execution {id} → {endpoint} con {paramElement}");
@@ -157,46 +156,11 @@ namespace BatchOrchestrator.Services
                     }
                 }
 
-                JsonElement element;
-                object parsedResponse;
-                Dictionary<string, string> pipelineMap = new();
-
-
-                try
-                {
-                    element = JsonSerializer.Deserialize<JsonElement>(responseText);
-
-                    if (element.ValueKind == JsonValueKind.Array)
-                    {
-                        foreach (var item in element.EnumerateArray())
-                        {
-                            if (item.ValueKind == JsonValueKind.Object &&
-                                item.TryGetProperty("pipeline_name", out var nameProp) &&
-                                item.TryGetProperty("status", out var statusProp))
-                            {
-                                var name = nameProp.GetString();
-                                var status = statusProp.GetString();
-
-                                if (!string.IsNullOrEmpty(name))
-                                    pipelineMap[name] = status ?? "";
-                            }
-                        }
-
-                        parsedResponse = JsonSerializer.SerializeToNode(pipelineMap); // 👈 diventa JsonObject
-                    }
-                    else
-                    {
-                        parsedResponse = JsonNode.Parse(element.GetRawText());
-                    }
-                }
-                catch
-                {
-                    parsedResponse = responseText; // fallback: salva come stringa raw
-                }
+               
                 responses[id] = new
                 {
                     timestamp = DateTime.Now.ToString("o"),
-                    response = parsedResponse
+                    response = responseText
                 };
                 var updated = JsonSerializer.Serialize(responses, new JsonSerializerOptions { WriteIndented = true });
 
