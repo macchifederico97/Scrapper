@@ -48,9 +48,9 @@ def getID_pipeline(bifrost_instance: str, filterEnabled: bool = False) -> dict:
     return res
 
 #Pipeline status function
-def status_pipeline(status_filter: str, bifrost_instance: str) -> dict:
+def status_pipeline(status_filter: bool, bifrost_instance: str) -> dict:
     print("Starting status_pipeline function")
-    res = scrape_pipeline_status(bifrost_instance, bool(status_filter), HEADLESS)
+    res = scrape_pipeline_status(bifrost_instance, status_filter, HEADLESS)
     return res
 
 #Pipeline last log download function

@@ -153,38 +153,37 @@ def healthz():
 #Call to function: pipeline_rerun
 @app.post("/api/rerun")
 def pipeline_rerun():
-    rerun_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"))
+    return rerun_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"))
     
 # Call to function: pipeline_rerun
 @app.post("/api/moveFileRerun")
 def pipeline_complete_rerun():
-    complete_rerun_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"))
+    return complete_rerun_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"))
 
 #Call to function: pipeline_runtime
 @app.get("/api/runtime")
 def pipeline_runtime():
-    print("def")
-    runtime_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"))
+    return runtime_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"))
 
 #Call to function: pipeline_getID
 @app.get("/api/getID")
 def pipeline_getID():
-    getID_pipeline_func(request.args.get("bifrost_instance"), request.args.get("filter"))
+    return getID_pipeline_func(request.args.get("bifrost_instance"), request.args.get("filter"))
     
 #Call to function: pipeline_status
 @app.get("/api/pipelineStatus")
 def pipeline_status():
-    status_pipeline_func(request.args.get("bifrost_instance"), request.args.get("status_filter"))
+    return status_pipeline_func(request.args.get("bifrost_instance"), request.args.get("status_filter"))
     
 # Call to function: pipeline_log
 @app.get("/api/lastLog")
 def pipeline_log():
-    log_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"))
+    return log_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"))
 
 # Call to function: pipeline_fullExtract
 @app.get("/api/pipelineFullExtract")
 def pipeline_fullExtract():
-    fullExtract_pipeline_func(request.args.get("bifrost_instance"), request.args.get("filter"))
+    return fullExtract_pipeline_func(request.args.get("bifrost_instance"), request.args.get("filter"))
 
 # Call to function: pipeline_update_Id, Manual Pipeline Id Update
 @app.get("/api/pipelineUpdateId")
@@ -207,17 +206,17 @@ def pipeline_update_id():
 # Call to function: pipeline_increase_timeout
 @app.post("/api/pipelineIncreaseTimeout")
 def pipeline_increaseTimeout():
-    increaseTimeout_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"), request.args.get("delta_increase"),request.args.get("processing_step_nr"))
+    return increaseTimeout_pipeline_func(request.args.get("pipeline_name"), request.args.get("bifrost_instance"), request.args.get("delta_increase"),request.args.get("processing_step_nr"))
     
 # Call to function: pipeline_increase_job_size
 @app.post("/api/pipelineIncreaseJobSize")
 def pipeline_increaseJobSize():
-    increaseJobSize_pipeline_func(request.args.get(request.args.get("pipeline_name")), request.args.get("bifrost_instance"), request.args.get("processing_step_nr"))
+    return increaseJobSize_pipeline_func(request.args.get(request.args.get("pipeline_name")), request.args.get("bifrost_instance"), request.args.get("processing_step_nr"))
 
 # Call to function: userStatus_extract
 @app.get("/api/userStatus")
 def userStatus_extract():
-    extract_userStatus_func(request.args.get("visualfabriq_instance"))
+    return extract_userStatus_func(request.args.get("visualfabriq_instance"))
 
 
 #FUNCION

@@ -33,7 +33,8 @@ def scrape_pipeline_status(bifrost_instance: str, filter_enabled: bool, headless
         for item in data["pipelines"]:  #ITERO PER TUTTE LE PIPELINE PRESENTI NEL DB
             pipeline_status_dict = {}   #CREO IL DICT DOVE SALVARE LE INFO DELLA PIPELINE
             pipelineStatus = item["status"]
-            if (pipelineStatus == "Enabled" and filter_enabled == True) or filter_enabled == False:
+            filter_enabled = str(filter_enabled).lower() == "true"
+            if (pipelineStatus == "Enabled" and filter_enabled) or not filter_enabled:
                 pipeline_id = item["pipeline_id"]
                 page.goto(f"https://app.eu.visualfabriq.com/bifrost/{bifrost_instance}/pipelines/{pipeline_id}/history")
                 page.wait_for_load_state()
